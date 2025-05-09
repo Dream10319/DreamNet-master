@@ -75,7 +75,7 @@ export class UserModel {
       const request = this.#pool.request();
       request.input("UserRole", DB.sql.VarChar, "USER");
       const result = await request.query(
-        `SELECT UserId, UserEmail, UserName, UserCreatedAt FROM [User] WHERE [UserRole] = @UserRole`
+        `SELECT UserId, UserEmail, UserName, UserRole, UserCreatedAt FROM [User] WHERE [UserRole] = @UserRole`
       );
       return result.recordset;
     } catch (err) {

@@ -32,6 +32,11 @@ const UsersPage = () => {
       sorter: (a: any, b: any) => a.UserEmail.localeCompare(b.UserEmail),
     },
     {
+      title: "User Role",
+      dataIndex: "UserRole",
+      sorter: (a: any, b: any) => a.UserRole.localeCompare(b.UserRole),
+    },
+    {
       title: "Created Date",
       dataIndex: "UserCreatedAt",
       render: (createdDate: any) => new Date(createdDate).toLocaleDateString(),

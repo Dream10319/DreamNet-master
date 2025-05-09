@@ -169,10 +169,12 @@ export class EventController {
       const { id } = req.params;
       const { contactId, userId } = req.body;
       await this.#eventModel.AddContactByEventId(Number(id), Number(contactId));
+      const contacts = await this.#eventModel.GetContactsById(Number(contactId));
+      const contactName = contacts?.[0].ContactName || "Unknown";
       this.#eventModel.AddEventHistory(
         Number(id),
         Number(userId),
-        "Event Contact Added"
+        `Event Contact "${contactName}" Added`
       );
       return res.status(200).json({
         status: true,
@@ -212,10 +214,12 @@ export class EventController {
       const { id, contactId } = req.params;
       const { userId } = req.body;
       await this.#eventModel.DeleteEventContactById(Number(contactId));
+      const contacts = await this.#eventModel.GetContactsById(Number(contactId));
+      const contactName = contacts?.[0].ContactName || "Unknown";
       this.#eventModel.AddEventHistory(
         Number(id),
         Number(userId),
-        "Event Contact Deleted"
+        `Event Contact "${contactName}" Deleted`
       );
       return res.status(200).json({
         status: true,

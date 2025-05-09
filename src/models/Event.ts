@@ -181,6 +181,22 @@ export class EventModel {
     }
   };
 
+  GetContactsById = async (id: number) => {
+    try {
+      const request = this.#rPool.request();
+      const result = await request.input("contactId", DB.sql.Int, id).query(`
+        SELECT con.[ContactName], con.[Email], con.[ContactId], con.[MobilePhoneNumber], org.[OrgName]
+        FROM [Contact] AS con
+        JOIN [Organisation] AS org ON con.[OrgId] = org.[OrgId]
+        WHERE con.[ContactId] = @contactId
+        `);
+
+      return result.recordset;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   AddContactByEventId = async (eventId: number, contactId: number) => {
     try {
       const request = this.#pool.request();
