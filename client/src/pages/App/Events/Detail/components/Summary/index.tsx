@@ -438,6 +438,7 @@ const EventSummary: React.FC<EventSummaryProps> = ({
         <Button
           icon={<PlusOutlined />}
           size="small"
+          type="primary"
           onClick={() => {
             setCurrentContact(null);
             setOpen(true);

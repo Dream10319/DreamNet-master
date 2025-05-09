@@ -81,6 +81,7 @@ const EventNote = () => {
         title={() => (
           <Button
             size="small"
+            type="primary"
             icon={<PlusOutlined />}
             onClick={() => {
               setCurrentNote(null);
