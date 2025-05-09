@@ -23,7 +23,7 @@ export class UserController {
 
       const hashedPassword = await bcrypt.hash(UserPassword, 10);
       await this.#userModel.AddUser(
-        UserEmail.toLowerCase(),
+        UserEmail,
         hashedPassword,
         UserName,
         UserRole
@@ -41,10 +41,30 @@ export class UserController {
     }
   };
 
+  GetUserById = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const user = await this.#userModel.GetUserById(Number(id));
+      return res.status(200).json({
+        status: true,
+        message: "User fetched successful",
+        data: {
+          user: user,
+        },
+      });
+    } catch (err) {
+      return res.status(500).json({
+        statu: false,
+        message: "Server error, please try again later.",
+        error: String(err),
+      });
+    }
+  }
+
   UpdateUserById = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const { UserName, UserEmail, UserPassword } = req.body;
+      const { UserName, UserEmail, UserPassword, statusPassword } = req.body;
 
       const existingUser = await this.#userModel.GetUserById(Number(id));
       if (!existingUser) {
@@ -53,15 +73,14 @@ export class UserController {
           .json({ status: false, message: "User not found!" });
       }
 
-      if (existingUser.UserEmail !== UserEmail.toLowerCase()) {
-        const emailExists = await this.#userModel.GetUserByEmail(UserEmail.toLowerCase());
-        if (emailExists) {
-          return res
-            .status(401)
-            .json({ status: false, message: "Email already in use!" });
-        }
-      }
-
+      // if (existingUser.UserEmail !== UserEmail.toLowerCase()) {
+      //   const emailExists = await this.#userModel.GetUserByEmail(UserEmail.toLowerCase());
+      //   if (emailExists) {
+      //     return res
+      //       .status(401)
+      //       .json({ status: false, message: "Email already in use!" });
+      //   }
+      // }
       let hashedPassword = existingUser.UserPassword;
       if (UserPassword) {
         hashedPassword = await bcrypt.hash(UserPassword, 10);
@@ -70,8 +89,9 @@ export class UserController {
       await this.#userModel.UpdateUserById(
         Number(id),
         UserName,
-        UserEmail.toLowerCase(),
+        UserEmail,
         hashedPassword,
+        statusPassword
       );
 
       return res

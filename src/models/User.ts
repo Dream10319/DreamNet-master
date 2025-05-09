@@ -70,16 +70,27 @@ export class UserModel {
     }
   };
 
-  UpdateUserById = async (userId: number, email: string, password: string, name: string) => {
+  UpdateUserById = async (userId: number, name: string, email: string, password: string, statusPassword: any) => {
     try {
-      const query = `
-        UPDATE [User]
-        SET UserEmail = @email,
-            UserPassword = @password,
-            UserName = @name,
-            UserUpdatedAt = @updatedAt
-        WHERE UserId = @userId
-      `;
+      let query;
+      if (statusPassword) {
+        query = `
+          UPDATE [User]
+          SET UserEmail = @email,
+              UserPassword = @password,
+              UserName = @name,
+              UserUpdatedAt = @updatedAt
+          WHERE UserId = @userId
+        `;
+      } else {
+        query = `
+          UPDATE [User]
+          SET UserEmail = @email,
+              UserName = @name,
+              UserUpdatedAt = @updatedAt
+          WHERE UserId = @userId
+        `;
+      }      
 
       const updatedAt = new Date();
 

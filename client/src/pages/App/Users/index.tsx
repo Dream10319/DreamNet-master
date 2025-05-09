@@ -5,9 +5,11 @@ import { apis } from "@/apis";
 import UserModal from "@/components/Modals/UserModal";
 import DeleteModal from "@/components/Modals/DeleteModal";
 import { MessageContext } from "@/App";
+import EditUserModal from "@/components/Modals/EditUserModal";
 
 const UsersPage = () => {
   const [open, setOpen] = React.useState(false);
+  const [editOpen, setEditOpen] = React.useState(false);
   const [users, setUsers] = React.useState<Array<any>>([]);
   const [loading, setLoading] = React.useState(false);
   const [deleteLoading, setDeleteLoading] = React.useState(false);
@@ -51,7 +53,7 @@ const UsersPage = () => {
             icon={<EditFilled />}
             onClick={() => {
               setCurrentUser(record);
-              setOpen(true); // open modal for editing
+              setEditOpen(true); // open modal for editing
             }}
           >
           </Button>
@@ -149,6 +151,14 @@ const UsersPage = () => {
       <UserModal
         open={open}
         setOpen={setOpen}
+        handleOk={() => {
+          GetUserList();
+        }}
+      />
+      <EditUserModal
+        open={editOpen}
+        setOpen={setEditOpen}
+        userId={currentUser?.UserId}
         handleOk={() => {
           GetUserList();
         }}
