@@ -1,0 +1,85 @@
+import { DB } from "@config/db";
+
+export class UserModel {
+  #pool: any;
+
+  constructor() {
+    this.#InitializeDB();
+  }
+
+  #InitializeDB = async () => {
+    const poolPromise = await DB.writePoolPromise;
+    this.#pool = poolPromise;
+  };
+
+  GetUserByEmail = async (email: string) => {
+    try {
+      const request = this.#pool.request();
+      request.input("email", DB.sql.VarChar, email);
+      const result = await request.query(
+        "SELECT * FROM [User] WHERE UserEmail = @email"
+      );
+
+      return result.recordset.length > 0 ? result.recordset[0] : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  GetUserById = async (id: number) => {
+    try {
+      const request = this.#pool.request();
+      request.input("id", DB.sql.Int, id);
+      const result = await request.query(
+        "SELECT * FROM [User] WHERE UserId = @id"
+      );
+
+      return result.recordset.length > 0 ? result.recordset[0] : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  DeleteUserById = async (id: number) => {
+    try {
+      const request = this.#pool.request();
+      request.input("id", DB.sql.Int, id);
+      await request.query(
+        "DELETE FROM [User] WHERE UserId = @id"
+      );
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  AddUser = async (email: string, hash: string, name: string, role: string) => {
+    try {
+      const request = this.#pool.request();
+      request.input("email", DB.sql.VarChar, email);
+      request.input("hash", DB.sql.VarChar, hash);
+      request.input("name", DB.sql.VarChar, name);
+      request.input("role", DB.sql.VarChar, role);
+      request.input("createdAt", DB.sql.DateTime, new Date());
+
+      await request.query(
+        "INSERT INTO [User] (UserEmail, UserPassword, UserName, UserRole, UserCreatedAt) VALUES (@email, @hash, @name, @role, @createdAt)"
+      );
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  };
+
+  GetUserList = async () => {
+    try {
+      const request = this.#pool.request();
+      request.input("UserRole", DB.sql.VarChar, "USER");
+      const result = await request.query(
+        `SELECT UserId, UserEmail, UserName, UserCreatedAt FROM [User] WHERE [UserRole] = @UserRole`
+      );
+      return result.recordset;
+    } catch (err) {
+      throw err;
+    }
+  };
+}

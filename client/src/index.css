@@ -1,0 +1,42 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.hideOnMobile {
+  display: none;
+}
+
+@media only screen and (min-width: 768px) {
+  .hideOnMobile {
+    display: block;
+  }
+}
+
+.hideOnDesktop {
+  display: block;
+}
+
+@media only screen and (min-width: 768px) {
+  .hideOnDesktop {
+    display: none;
+  }
+}
+
+.event-detail .ant-tabs-tab {
+  width: 120px !important;
+}
+
+.summary-form .ant-form-item {
+  margin-bottom: 5px;
+}
+
+@media only screen and (max-width: 572px) {
+  .summary-form .ant-form-item {
+    margin-bottom: 0px;
+  }
+
+  .summary-form .ant-form-item-label {
+    padding-bottom: 0px;
+  }
+}
