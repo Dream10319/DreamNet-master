@@ -1,6 +1,6 @@
 import React from "react";
 import { Flex, Card, Table, Typography, Button } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditFilled } from "@ant-design/icons";
 import { apis } from "@/apis";
 import UserModal from "@/components/Modals/UserModal";
 import DeleteModal from "@/components/Modals/DeleteModal";
@@ -44,7 +44,17 @@ const UsersPage = () => {
     {
       title: "Actions",
       render: (_: any, record: any) => (
-        <Flex>
+        <Flex gap={8}>
+          <Button
+            size="small"
+            type="primary"
+            icon={<EditFilled />}
+            onClick={() => {
+              setCurrentUser(record);
+              setOpen(true); // open modal for editing
+            }}
+          >
+          </Button>
           <Button
             size="small"
             type="primary"

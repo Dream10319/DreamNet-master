@@ -41,6 +41,52 @@ export class UserController {
     }
   };
 
+  UpdateUserById = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { UserName, UserEmail, UserPassword } = req.body;
+
+      const existingUser = await this.#userModel.GetUserById(Number(id));
+      if (!existingUser) {
+        return res
+          .status(404)
+          .json({ status: false, message: "User not found!" });
+      }
+
+      if (existingUser.UserEmail !== UserEmail.toLowerCase()) {
+        const emailExists = await this.#userModel.GetUserByEmail(UserEmail.toLowerCase());
+        if (emailExists) {
+          return res
+            .status(401)
+            .json({ status: false, message: "Email already in use!" });
+        }
+      }
+
+      let hashedPassword = existingUser.UserPassword;
+      if (UserPassword) {
+        hashedPassword = await bcrypt.hash(UserPassword, 10);
+      }
+
+      await this.#userModel.UpdateUserById(
+        Number(id),
+        UserName,
+        UserEmail.toLowerCase(),
+        hashedPassword,
+      );
+
+      return res
+        .status(200)
+        .json({ status: true, message: "User updated successfully!" });
+
+    } catch (err) {
+      return res.status(500).json({
+        status: false,
+        message: "Server error, please try again later.",
+        error: String(err),
+      });
+    }
+  };
+
   GetUserList = async (req: Request, res: Response) => {
     try {
       const users = await this.#userModel.GetUserList();

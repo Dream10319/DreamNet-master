@@ -60,13 +60,41 @@ export class UserModel {
       request.input("name", DB.sql.VarChar, name);
       request.input("role", DB.sql.VarChar, role);
       request.input("createdAt", DB.sql.DateTime, new Date());
-
+      request.input("updatedAt", DB.sql.DateTime, new Date());
       await request.query(
-        "INSERT INTO [User] (UserEmail, UserPassword, UserName, UserRole, UserCreatedAt) VALUES (@email, @hash, @name, @role, @createdAt)"
+        "INSERT INTO [User] (UserEmail, UserPassword, UserName, UserRole, UserCreatedAt, UserUpdatedAt) VALUES (@email, @hash, @name, @role, @createdAt, @updatedAt)"
       );
     } catch (err) {
       console.log(err);
       throw err;
+    }
+  };
+
+  UpdateUserById = async (userId: number, email: string, password: string, name: string) => {
+    try {
+      const query = `
+        UPDATE [User]
+        SET UserEmail = @email,
+            UserPassword = @password,
+            UserName = @name,
+            UserUpdatedAt = @updatedAt
+        WHERE UserId = @userId
+      `;
+
+      const updatedAt = new Date();
+
+      const request = this.#pool.request();
+      request.input("userId", DB.sql.Int, userId);
+      request.input("email", DB.sql.VarChar, email);
+      request.input("password", DB.sql.VarChar, password);
+      request.input("name", DB.sql.VarChar, name);
+      request.input("updatedAt", DB.sql.DateTime, updatedAt);
+
+      await request.query(query);
+
+    } catch (err) {
+      console.log("Error updating user:", err);
+      throw err;  // Throw the error to be caught by the controller
     }
   };
 

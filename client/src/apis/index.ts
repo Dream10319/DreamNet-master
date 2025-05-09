@@ -83,6 +83,7 @@ const GetEventHistoryById = (id: string) => API.get(`/api/v1/events/${id}/histor
 
 // Users
 const CreateUser = (data: any) => API.post("/api/v1/users/create", data);
+const UpdateUserById = (id: string) => API.post(`/api/v1/users/${id}`);
 const GetUserList = () => API.get("/api/v1/users/list");
 const DeleteUserById = (id: string) => API.delete(`/api/v1/users/${id}`);
 
@@ -125,6 +126,7 @@ export const apis = {
 
   // Users
   CreateUser,
+  UpdateUserById,
   GetUserList,
-  DeleteUserById
+  DeleteUserById,
 };
