@@ -13,6 +13,8 @@ import {
   InputNumber,
   Table,
   Divider,
+  GetProp,
+  TableProps
 } from "antd";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
@@ -22,11 +24,29 @@ import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import ContactModal from "@/components/Modals/ContactModal";
 import DeleteModal from "@/components/Modals/DeleteModal";
 import { MessageContext } from "@/App";
+import type { SorterResult } from 'antd/es/table/interface';
+
+type TablePaginationConfig = Exclude<GetProp<TableProps, 'pagination'>, boolean>;
+
+interface DataType {
+  name: string;
+  email: string;
+  mobile: string;
+  company: string;
+}
+
 interface EventSummaryProps {
   id: any;
   initialData: InitialDataType;
   eventDetail: EventDetailType;
   getEvent: () => void;
+}
+
+interface TableParams {
+  pagination?: TablePaginationConfig;
+  sortField?: SorterResult<any>['field'];
+  sortOrder?: SorterResult<any>['order'];
+  filters?: Parameters<GetProp<TableProps, 'onChange'>>[1];
 }
 
 const EventSummary: React.FC<EventSummaryProps> = ({
@@ -45,6 +65,13 @@ const EventSummary: React.FC<EventSummaryProps> = ({
   const [currentContact, setCurrentContact] = React.useState<any>(null);
   const [form] = Form.useForm();
   const messageAPI = React.useContext(MessageContext);
+  const [tableParams, setTableParams] = React.useState<TableParams>({
+    pagination: {
+      current: 1,
+      pageSize: 5,
+    },
+  });
+
 
   const SaveEvent = async (values: any) => {
     try {
@@ -134,6 +161,13 @@ const EventSummary: React.FC<EventSummaryProps> = ({
           },
           ...tempContacts,
         ]);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: response.payload.contacts.length + 1,
+          },
+        });
       }
     } catch (err) {
       console.log(err);
@@ -142,11 +176,26 @@ const EventSummary: React.FC<EventSummaryProps> = ({
     }
   };
 
+  const handleTableChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      sortOrder: Array.isArray(sorter) ? undefined : sorter.order,
+      sortField: Array.isArray(sorter) ? undefined : sorter.field,
+    });
+
+    // `dataSource` is useless since `pageSize` changed
+    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      setContacts([]);
+    }
+  };
+
   React.useEffect(() => {
     if (id && eventDetail && initialData.contacts.length > 0) {
       GetEventContactList(id);
     }
   }, [eventDetail, id, initialData]);
+
 
   const DeleteContact = async () => {
     try {
@@ -445,6 +494,61 @@ const EventSummary: React.FC<EventSummaryProps> = ({
             </Form.Item>
           </Col>
         </Row>
+        <Flex gap={10} align="center" style={{ marginTop: 10 }}>
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            Contacts
+          </Typography.Title>
+          <Button
+            icon={<PlusOutlined />}
+            size="small"
+            type="primary"
+            onClick={() => {
+              setCurrentContact(null);
+              setOpen(true);
+            }}
+          />
+        </Flex>
+        <Divider style={{ margin: "5px 0px" }} />
+        <Table
+          columns={[
+            { title: "Name", dataIndex: "Name" },
+            {
+              title: "Email",
+              dataIndex: "Email",
+            },
+            { title: "Mobile", dataIndex: "Mobile" },
+            {
+              title: "Company",
+              dataIndex: "Company",
+            },
+            {
+              title: "Actions",
+              render: (_: any, record: any) => (
+                <Flex>
+                  <Button
+                    type="primary"
+                    icon={<DeleteOutlined />}
+                    danger
+                    disabled={record.index === 0}
+                    onClick={() => {
+                      setCurrentContact(record);
+                      setDeleteOpen(true);
+                    }}
+                  />
+                </Flex>
+              ),
+            },
+          ]}
+          size="small"
+          scroll={{
+            x: true,
+          }}
+          loading={loadingContact}
+          dataSource={contacts}
+          pagination={tableParams.pagination}
+          rowKey={"index"}
+          onChange={handleTableChange}
+        />
         <Row>
           <Flex
             justify="flex-end"
@@ -456,6 +560,7 @@ const EventSummary: React.FC<EventSummaryProps> = ({
               htmlType="submit"
               style={{ width: 100 }}
               loading={saving}
+              disabled={contacts.length <= 1}
             >
               SAVE
             </Button>
@@ -470,59 +575,7 @@ const EventSummary: React.FC<EventSummaryProps> = ({
           </Flex>
         </Row>
       </Form>
-      <Flex gap={10} align="center" style={{ marginTop: 10 }}>
-        <Typography.Title level={4} style={{ margin: 0 }}>
-          Contacts
-        </Typography.Title>
-        <Button
-          icon={<PlusOutlined />}
-          size="small"
-          type="primary"
-          onClick={() => {
-            setCurrentContact(null);
-            setOpen(true);
-          }}
-        />
-      </Flex>
-      <Divider style={{ margin: "5px 0px" }} />
-      <Table
-        columns={[
-          { title: "Name", dataIndex: "Name" },
-          {
-            title: "Email",
-            dataIndex: "Email",
-          },
-          { title: "Mobile", dataIndex: "Mobile" },
-          {
-            title: "Company",
-            dataIndex: "Company",
-          },
-          {
-            title: "Actions",
-            render: (_: any, record: any) => (
-              <Flex>
-                <Button
-                  type="primary"
-                  icon={<DeleteOutlined />}
-                  danger
-                  disabled={record.index === 0}
-                  onClick={() => {
-                    setCurrentContact(record);
-                    setDeleteOpen(true);
-                  }}
-                />
-              </Flex>
-            ),
-          },
-        ]}
-        size="small"
-        scroll={{
-          x: true,
-        }}
-        loading={loadingContact}
-        dataSource={contacts}
-        rowKey={"index"}
-      />
+
       <ContactModal
         open={open}
         setOpen={setOpen}

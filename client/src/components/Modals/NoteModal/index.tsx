@@ -9,6 +9,7 @@ interface NoteModalProps {
   setOpen: (value: boolean) => void;
   note: any;
   handleOk: () => void;
+  contacts: Array<any>;
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({
@@ -16,6 +17,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
   setOpen,
   note,
   handleOk,
+  contacts,
 }) => {
   const { id } = useParams();
   const [form] = Form.useForm();
@@ -31,12 +33,46 @@ const NoteModal: React.FC<NoteModalProps> = ({
       setLoading(true);
       const response: any = note
         ? await apis.UpdateEventNoteById(id as string, note.EventNoteId, {
-            note: values.note,
-          })
+          note: values.note,
+        })
         : await apis.AddEventNoteById(id as string, {
-            note: values.note,
-          });
+          note: values.note,
+        });
       if (response.status) {
+        const resDetail: any = await apis.GetEventDetailById(id as string);
+        const resContacts: any = await apis.GetEventContactListById(id as string);
+        const tempContacts = [
+          {
+            Email: resDetail.payload.event.UserEmail,
+            Name: resDetail.payload.event.UserName
+          },
+          ...resContacts.payload.contacts.map((contact: any) => {
+            const tempContact = contacts.find(
+              (con: any) => con.ContactId === contact.ContactId
+            );
+            return {
+              Email: tempContact.Email,
+              Name: tempContact.ContactName
+            };
+          })
+        ];
+
+        const reqBody = {
+          contacts: tempContacts,
+          eventID: id as string,
+          note: response.payload[0].NoteText as string,
+          userName: response.payload[0].UserName as string,
+          updateTime: response.payload[0].NoteDate as string,
+        }
+
+        const resEmailResult: any = await apis.SendEventNoteEmail(reqBody);
+
+        if (resEmailResult.status) {
+          messageAPI.open({
+            type: "success",
+            content: resEmailResult.message,
+          });
+        }
         handleClose();
         handleOk();
       }

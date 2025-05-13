@@ -87,6 +87,13 @@ const SendEventEmail = (data: {
   sourceCode: string;
   sourceName: string;
 }) => API.post('/api/v1/events/send-email', data);
+const SendEventNoteEmail = (data: {
+  contacts: { email: string; name: string }[];
+  eventID: string;
+  note: string;
+  userName: string;
+  updateTime: string;
+}) => API.post('/api/v1/events/send-note-email', data);
 
 // Users
 const CreateUser = (data: any) => API.post("/api/v1/users/create", data);
@@ -132,6 +139,7 @@ export const apis = {
   DeleteEventAttachmentById,
   GetEventHistoryById,
   SendEventEmail,
+  SendEventNoteEmail,
 
   // Users
   CreateUser,

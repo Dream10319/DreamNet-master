@@ -238,7 +238,7 @@ export class EventController {
     try {
       const { id } = req.params;
       const { note, userId } = req.body;
-      await this.#eventModel.AddEventNoteById(Number(id), {
+      const result = await this.#eventModel.AddEventNoteById(Number(id), {
         note: note,
         userId: userId,
       });
@@ -250,6 +250,7 @@ export class EventController {
       return res.status(200).json({
         status: true,
         message: "Event Note added successfully",
+        payload: result,
       });
     } catch (err) {
       return res.status(500).json({
@@ -287,7 +288,7 @@ export class EventController {
     try {
       const { id, noteId } = req.params;
       const { note, userId } = req.body;
-      await this.#eventModel.UpdateEventNoteByEventId(Number(noteId), note);
+      const result = await this.#eventModel.UpdateEventNoteByEventId(Number(noteId), note);
       this.#eventModel.AddEventHistory(
         Number(id),
         Number(userId),
@@ -296,6 +297,7 @@ export class EventController {
       return res.status(200).json({
         status: true,
         message: "Event Note updated successfully",
+        payload: result,
       });
     } catch (err) {
       return res.status(500).json({
@@ -516,6 +518,51 @@ export class EventController {
           ${eventDescription}
   
           On behalf of KTS Group Ltd
+        `;
+
+        await this.transporter.sendMail({
+          from: process.env.EVENT_EMAIL,
+          to: contact.Email,
+          subject,
+          text: emailBody,
+        });
+      }
+
+      return res.status(200).json({
+        status: true,
+        message: 'Emails sent successfully',
+      });
+    } catch (err) {
+      return res.status(500).json({
+        status: false,
+        message: 'Email sending failed. Please try again later.',
+        error: String(err),
+      });
+    }
+  };
+
+  SendEventNoteEmail = async (req: Request, res: Response) => {
+    try {
+      const {
+        contacts,
+        eventID,
+        note,
+        userName,
+        updateTime,
+      } = req.body;
+
+      const subject = `KTS ${eventID}: ${eventID}`;
+      const date = new Date(updateTime);
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const formatted =
+        `${pad(date.getUTCDate())}/${pad(date.getUTCMonth() + 1)}/${date.getUTCFullYear().toString().slice(-2)} ` +
+        `${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}`;
+
+      for (const contact of contacts) {
+        const emailBody = `
+          Note added by ${userName} ${formatted}:
+
+          ${note}
         `;
 
         await this.transporter.sendMail({

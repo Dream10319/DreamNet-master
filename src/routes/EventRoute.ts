@@ -24,5 +24,6 @@ router.delete("/:id/attachments/:attachmentId", Auth as any, eventController.Del
 router.get("/:id/attachments/list", Auth as any, eventController.GetEventAttachmentsList as any);
 router.get("/:id/history/list", Auth as any, eventController.GetEventHistoryListById as any);
 router.post('/send-email', Auth as any, eventController.SendEventEmail as any);
+router.post('/send-note-email', Auth as any, eventController.SendEventNoteEmail as any);
 
 export default router;

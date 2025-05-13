@@ -102,7 +102,8 @@ const EventDetailPage = () => {
           getEvent={() => GetEventDetailById(id as string)}
         />
       ) : tab === "notes" ? (
-        <Event.Note />
+        <Event.Note
+        initialData={initialData} />
       ) : tab === "history" ? (
         <Event.History />
       ) : (

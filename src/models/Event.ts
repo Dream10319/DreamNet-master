@@ -247,6 +247,12 @@ export class EventModel {
         .query(`INSERT INTO [EventNotes] ([NoteText], [NoteUser], [NoteDate], [EventId]) 
           VALUES (@NoteText, @UserId, @NoteDate, @EventId)
       `);
+      const result = await request.query(`
+        SELECT TOP 1 en.[EventNoteId], en.[NoteText], en.[NoteDate], u.[UserName], u.[UserEmail]
+        FROM [EventNotes] AS en
+        JOIN [User] as u ON u.[UserId] = en.[NoteUser]
+        ORDER BY en.[EventNoteId] DESC`)
+      return result.recordset;
     } catch (err) {
       throw err;
     }
@@ -254,8 +260,8 @@ export class EventModel {
 
   GetEventNoteListByEventId = async (id: number) => {
     try {
-      const requset = this.#pool.request();
-      const result = await requset.input("EventId", DB.sql.Int, id).query(`
+      const request = this.#pool.request();
+      const result = await request.input("EventId", DB.sql.Int, id).query(`
         SELECT en.[EventNoteId], en.[NoteText], en.[NoteDate], u.[UserName], u.[UserEmail]
         FROM [EventNotes] AS en
         JOIN [User] as u ON u.[UserId] = en.[NoteUser]
@@ -270,14 +276,22 @@ export class EventModel {
 
   UpdateEventNoteByEventId = async (noteId: number, noteText: string) => {
     try {
-      const requset = this.#pool.request();
-      await requset
+      const request = this.#pool.request();
+      await request
         .input("EventNoteId", DB.sql.Int, noteId)
-        .input("NoteText", DB.sql.Text, noteText).query(`
+        .input("NoteText", DB.sql.Text, noteText)
+        .input("NoteDate", DB.sql.DateTime, new Date()).query(`
         UPDATE [EventNotes]
-        SET [NoteText] = @NoteText
+        SET [NoteText] = @NoteText, [NoteDate] = @NoteDate
         WHERE [EventNoteId] = @EventNoteId
         `);
+      const result = await request.input("NoteId", DB.sql.Int, noteId).query(`
+        SELECT en.[EventNoteId], en.[NoteText], en.[NoteDate], u.[UserName], u.[UserEmail]
+        FROM [EventNotes] AS en
+        JOIN [User] as u ON u.[UserId] = en.[NoteUser]
+        WHERE [EventNoteId] = @NoteId
+        ORDER BY en.[NoteDate] DESC`)
+      return result.recordset;
     } catch (err) {
       throw err;
     }
@@ -285,8 +299,8 @@ export class EventModel {
 
   DeleteEventNoteById = async (noteId: number) => {
     try {
-      const requset = this.#pool.request();
-      await requset.input("EventNoteId", DB.sql.Int, noteId).query(`
+      const request = this.#pool.request();
+      await request.input("EventNoteId", DB.sql.Int, noteId).query(`
         DELETE FROM [EventNotes]
         WHERE [EventNoteId] = @EventNoteId
         `);
@@ -346,16 +360,16 @@ export class EventModel {
 
   DeleteEventAttachmentById = async (id: number) => {
     try {
-      const requset = this.#pool.request();
-      requset.input("EventAttachmentId", DB.sql.Int, id);
+      const request = this.#pool.request();
+      request.input("EventAttachmentId", DB.sql.Int, id);
 
-      const result = await requset.query(
+      const result = await request.query(
         `SELECT * FROM [EventAttachments] WHERE [EventAttachmentId] = @EventAttachmentId`
       );
       const path =
         result.recordset.length > 0 ? result.recordset[0].FilePath : null;
 
-      await requset.query(`
+      await request.query(`
         DELETE FROM [EventAttachments]
         WHERE [EventAttachmentId] = @EventAttachmentId
         `);

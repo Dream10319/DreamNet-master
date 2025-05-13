@@ -6,6 +6,10 @@ import DeleteModal from "@/components/Modals/DeleteModal";
 import { apis } from "@/apis";
 import { useParams } from "react-router-dom";
 import TextTruncate from "react-text-truncate";
+import { InitialDataType } from "@/types";
+interface EventNoteProps {
+  initialData: InitialDataType;
+}
 
 const Truncate = ({ text }: { text: string }) => {
   const [isTruncated, setIsTruncated] = React.useState(true);
@@ -28,7 +32,9 @@ const Truncate = ({ text }: { text: string }) => {
   );
 };
 
-const EventNote = () => {
+const EventNote: React.FC<EventNoteProps> = ({
+  initialData,
+}) => {
   const { id } = useParams();
   const [open, setOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
@@ -145,6 +151,7 @@ const EventNote = () => {
         setOpen={setOpen}
         note={currentNote}
         handleOk={GetEventNoteList}
+        contacts={initialData.contacts}
       />
       <DeleteModal
         handleOk={DeleteNote}
