@@ -83,9 +83,9 @@ const EventSummary: React.FC<EventSummaryProps> = ({
         IsUpdate: isUpdate
       }
 
-      const resEmailResult: any = await apis.SendEventEmail(reqBody); 
-      setSaving(false);
-      if (resEmailResult.status){
+      const resEmailResult: any = await apis.SendEventEmail(reqBody);
+
+      if (resEmailResult.status) {
         messageAPI.open({
           type: "success",
           content: resEmailResult.message,
