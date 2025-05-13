@@ -6,7 +6,7 @@ import { EventModel } from "@models/Event";
 import { RentalModel } from "@models/Rental";
 import { OrganisationModel } from "@models/Organisation";
 import { ProjectModel } from "@models/Project";
-
+import nodemailer from 'nodemailer';
 export class EventController {
   #eventModel: EventModel;
   #rentalModel: RentalModel;
@@ -31,7 +31,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -85,7 +85,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -104,7 +104,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -133,7 +133,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -157,7 +157,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -182,7 +182,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -202,7 +202,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -227,7 +227,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -253,7 +253,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -276,7 +276,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -299,7 +299,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -321,7 +321,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -344,7 +344,7 @@ export class EventController {
     this.UploadFile(req, res, async (err: any) => {
       if (err) {
         return res.status(400).json({
-          statu: false,
+          status: false,
           message: "File upload failed.",
         });
       }
@@ -357,7 +357,7 @@ export class EventController {
         });
       } catch (error) {
         return res.status(500).json({
-          statu: false,
+          status: false,
           message: "Server error, please try again later.",
         });
       }
@@ -376,7 +376,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
       });
     }
@@ -397,7 +397,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
       });
     }
@@ -429,7 +429,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
       });
     }
@@ -450,7 +450,7 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
       });
     }
@@ -470,9 +470,73 @@ export class EventController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
       });
     }
   };
+
+  transporter = nodemailer.createTransport({
+    host: 'smtp.office365.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EVENT_EMAIL,
+      pass: process.env.EVENT_EMAIL_PASS, // Use env vars in production
+    },
+    tls: {
+      ciphers: 'SSLv3',
+    },
+  });
+
+  SendEventEmail = async (req: Request, res: Response) => {
+    try {
+      const {
+        contacts,
+        eventName,
+        eventDescription,
+        sourceCode,
+        sourceName,
+        IsUpdate,
+      } = req.body;
+
+      const subjectPrefix = IsUpdate ? 'KTS ISSUE UPDATE' : 'KTS NEW ISSUE';
+      const subject = `${subjectPrefix} ${sourceCode} ${sourceName}`;
+
+      for (const contact of contacts) {
+        const emailBody = `
+          Dear ${contact.Name},
+  
+          ${IsUpdate
+            ? `Please see below updates on an issue which has been assigned to you. Please contact us for clarification if necessary:`
+            : `Please see below details of an issue which has been assigned to you. Please contact us for clarification if necessary:`}
+  
+          ${eventName}
+  
+          ${eventDescription}
+  
+          On behalf of KTS Group Ltd
+        `;
+
+        await this.transporter.sendMail({
+          from: process.env.EVENT_EMAIL,
+          to: contact.Email,
+          subject,
+          text: emailBody,
+        });
+      }
+
+      return res.status(200).json({
+        status: true,
+        message: 'Emails sent successfully',
+      });
+    } catch (err) {
+      return res.status(500).json({
+        status: false,
+        message: 'Email sending failed. Please try again later.',
+        error: String(err),
+      });
+    }
+  };
+
 }

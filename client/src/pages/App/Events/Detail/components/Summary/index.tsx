@@ -21,7 +21,7 @@ import { apis } from "@/apis";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import ContactModal from "@/components/Modals/ContactModal";
 import DeleteModal from "@/components/Modals/DeleteModal";
-
+import { MessageContext } from "@/App";
 interface EventSummaryProps {
   id: any;
   initialData: InitialDataType;
@@ -44,13 +44,52 @@ const EventSummary: React.FC<EventSummaryProps> = ({
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [currentContact, setCurrentContact] = React.useState<any>(null);
   const [form] = Form.useForm();
+  const messageAPI = React.useContext(MessageContext);
 
   const SaveEvent = async (values: any) => {
     try {
       setSaving(true);
+      const resDetail: any = await apis.GetEventDetailById(id);
+      const isUpdate = resDetail.payload.event.Description !== null;
+
       const response: any = await apis.UpdateEventById(id, values);
       if (response.status) {
         getEvent();
+      }
+
+      const resContacts: any = await apis.GetEventContactListById(id);
+      const tempContacts = [
+        {
+          Email: resDetail.payload.event.UserEmail,
+          Name: resDetail.payload.event.UserName
+        },
+        ...resContacts.payload.contacts.map((contact: any) => {
+          const tempContact = initialData.contacts.find(
+            (con: any) => con.ContactId === contact.ContactId
+          );
+          return {
+            Email: tempContact.Email,
+            Name: tempContact.ContactName
+          };
+        })
+      ];
+
+      const reqBody = {
+        contacts: tempContacts,
+        eventName: resDetail.payload.event.Title,
+        eventDescription: values.Description,
+        sourceCode: resDetail.payload.event.Code,
+        sourceName: resDetail.payload.event.Source,
+        IsUpdate: isUpdate
+      }
+
+      const resEmailResult: any = await apis.SendEventEmail(reqBody); 
+      setSaving(false);
+      if (resEmailResult.status){
+        messageAPI.open({
+          type: "success",
+          content: resEmailResult.message,
+        });
       }
     } catch (err) {
       console.log(err);

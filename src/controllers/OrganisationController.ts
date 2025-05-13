@@ -19,7 +19,7 @@ export class OrganisationController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -35,7 +35,7 @@ export class OrganisationController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });

@@ -34,7 +34,7 @@ export class UserController {
         .json({ status: true, message: "User registered successfully!" });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -54,7 +54,7 @@ export class UserController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -119,7 +119,7 @@ export class UserController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -136,7 +136,7 @@ export class UserController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });

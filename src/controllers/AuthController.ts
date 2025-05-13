@@ -50,7 +50,7 @@ export class AuthController {
       });
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });
@@ -81,7 +81,7 @@ export class AuthController {
   //       .json({ status: true, message: "User registered successfully!" });
   //   } catch (err) {
   //     return res.status(500).json({
-  //       statu: false,
+  //       status: false,
   //       message: "Server error, please try again later.",
   //       error: String(err),
   //     });
@@ -109,11 +109,11 @@ export class AuthController {
       } else {
         return res
           .status(404)
-          .json({ statu: false, message: "User not Found" });
+          .json({ status: false, message: "User not Found" });
       }
     } catch (err) {
       return res.status(500).json({
-        statu: false,
+        status: false,
         message: "Server error, please try again later.",
         error: String(err),
       });

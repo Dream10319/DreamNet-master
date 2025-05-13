@@ -17,7 +17,7 @@ API.interceptors.request.use((config: any) => {
         config.headers = mHeaders;
       }
     }
-  } catch (error) {}
+  } catch (error) { }
 
   return config;
 });
@@ -80,6 +80,13 @@ const AddEventAttachmentById = (id: string, data: any) => API.post(`/api/v1/even
 const GetEventAttachmentListById = (id: string) => API.get(`/api/v1/events/${id}/attachments/list`);
 const DeleteEventAttachmentById = (id: string, attachId: string) => API.delete(`/api/v1/events/${id}/attachments/${attachId}`);
 const GetEventHistoryById = (id: string) => API.get(`/api/v1/events/${id}/history/list`);
+const SendEventEmail = (data: {
+  contacts: { email: string; name: string }[];
+  eventName: string;
+  eventDescription: string;
+  sourceCode: string;
+  sourceName: string;
+}) => API.post('/api/v1/events/send-email', data);
 
 // Users
 const CreateUser = (data: any) => API.post("/api/v1/users/create", data);
@@ -124,6 +131,7 @@ export const apis = {
   GetEventAttachmentListById,
   DeleteEventAttachmentById,
   GetEventHistoryById,
+  SendEventEmail,
 
   // Users
   CreateUser,
