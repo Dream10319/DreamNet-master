@@ -1,15 +1,33 @@
 import React from "react";
-import { Card, Table, Typography, Button } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
+import { Card, Table, Typography, Button, Input, Space, type InputRef, } from "antd";
+import { SearchOutlined, EyeOutlined } from "@ant-design/icons";
 import { apis } from "@/apis";
 import { useNavigate } from "react-router-dom";
+import type { FilterDropdownProps } from "antd/es/table/interface";
 
 const EventsPage = () => {
   const navigate = useNavigate();
   const [events, setEvents] = React.useState<Array<any>>([]);
-  // const [filteredData, setFilteredData] = React.useState<Array<any>>([]);
+  const searchPropertyInput = React.useRef<InputRef>(null);
   const [loading, setLoading] = React.useState(false);
-  const [initialData, setInitialData] = React.useState({
+  interface Contact {
+    ContactId: string;
+    Email: string;
+    ContactName: string;
+  }
+  interface ContactValue {
+    email: string;
+    name: string;
+  }
+  interface InitialData {
+    contacts: Contact[];
+    eventPriority: any;
+    eventStatus: any;
+    eventType: any;
+    attachmentType: any;
+  }
+
+  const [initialData, setInitialData] = React.useState<InitialData>({
     eventPriority: [],
     eventStatus: [],
     eventType: [],
@@ -17,13 +35,22 @@ const EventsPage = () => {
     attachmentType: [],
   });
 
-  // const handleReset = (clearFilters: () => void) => {
-  //   clearFilters();
-  // };
+  const [contactData, setContactdata] = React.useState<Record<string, ContactValue>>({});
+  React.useEffect(() => {
+    const tempData: Record<string, ContactValue> = {};
+    if (!initialData || !initialData.contacts) return;
+    initialData.contacts.forEach(contact => {
+      tempData[contact.ContactId] = {
+        email: contact.Email,
+        name: contact.ContactName,
+      };
+    });
+    setContactdata(tempData);
+  }, [initialData]);
 
-  // const onChange = (pagination: any, filters: any) => {
-  //   setFilters(filters["Type"] || []);
-  // };
+  const handleReset = (clearFilters: () => void) => {
+    clearFilters();
+  };
 
   const columns = [
     {
@@ -41,11 +68,11 @@ const EventsPage = () => {
       dataIndex: "EventStatus",
       filters: initialData.eventStatus
         ? initialData.eventStatus.map((status: any) => {
-            return {
-              text: status.Status,
-              value: status.Status,
-            };
-          })
+          return {
+            text: status.Status,
+            value: status.Status,
+          };
+        })
         : [],
       onFilter: (value: any, record: any) => record.EventStatus === value,
     },
@@ -54,98 +81,97 @@ const EventsPage = () => {
       dataIndex: "EventType",
       filters: initialData.eventType
         ? initialData.eventType.map((type: any) => {
-            return {
-              text: type.Type,
-              value: type.Type,
-            };
-          })
+          return {
+            text: type.Type,
+            value: type.Type,
+          };
+        })
         : [],
       onFilter: (value: any, record: any) => record.EventType === value,
     },
     {
       title: "Source",
       dataIndex: "Source",
-      sorter: (a: any, b: any) => a.Source.localeCompare(b.Source),
-      // sorter: (a: any, b: any) => a.OrgName.localeCompare(b.OrgName),
-      // filterDropdown: ({
-      //   setSelectedKeys,
-      //   selectedKeys,
-      //   confirm,
-      //   clearFilters,
-      //   close,
-      // }: FilterDropdownProps) => (
-      //   <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-      //     <Input
-      //       ref={searchPropertyInput}
-      //       placeholder={`Search Organisation`}
-      //       value={selectedKeys[0]}
-      //       onChange={(e) => {
-      //         setSelectedKeys(e.target.value ? [e.target.value] : []);
-      //       }}
-      //       onPressEnter={() => confirm()}
-      //       style={{ marginBottom: 8, display: "block" }}
-      //     />
-      //     <Space>
-      //       <Button
-      //         type="primary"
-      //         onClick={() => confirm()}
-      //         icon={<SearchOutlined />}
-      //         size="small"
-      //         style={{ width: 90 }}
-      //       >
-      //         Search
-      //       </Button>
-      //       <Button
-      //         onClick={() => clearFilters && handleReset(clearFilters)}
-      //         size="small"
-      //         style={{ width: 90 }}
-      //       >
-      //         Reset
-      //       </Button>
-      //       <Button
-      //         type="link"
-      //         size="small"
-      //         onClick={() => {
-      //           confirm({ closeDropdown: false });
-      //         }}
-      //       >
-      //         Filter
-      //       </Button>
-      //       <Button
-      //         type="link"
-      //         size="small"
-      //         onClick={() => {
-      //           close();
-      //         }}
-      //       >
-      //         close
-      //       </Button>
-      //     </Space>
-      //   </div>
-      // ),
-      // filterIcon: (filtered: boolean) => (
-      //   <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
-      // ),
-      // onFilter: (value: any, record: any) =>
-      //   record.OrgName.toString()
-      //     .toLowerCase()
-      //     .includes((value as string).toLowerCase()),
-      // onFilterDropdownOpenChange: (visible: boolean) => {
-      //   if (visible) {
-      //     setTimeout(() => searchPropertyInput.current?.select(), 100);
-      //   }
-      // },
+      sorter: (a: any, b: any) => a.OrgName.localeCompare(b.Source),
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+        close,
+      }: FilterDropdownProps) => (
+        <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+          <Input
+            ref={searchPropertyInput}
+            placeholder={`Search Source`}
+            value={selectedKeys[0]}
+            onChange={(e) => {
+              setSelectedKeys(e.target.value ? [e.target.value] : []);
+            }}
+            onPressEnter={() => confirm()}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({ closeDropdown: false });
+              }}
+            >
+              Filter
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                close();
+              }}
+            >
+              close
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered: boolean) => (
+        <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
+      ),
+      onFilter: (value: any, record: any) =>
+        record.Source.toString()
+          .toLowerCase()
+          .includes((value as string).toLowerCase()),
+      onFilterDropdownOpenChange: (visible: boolean) => {
+        if (visible) {
+          setTimeout(() => searchPropertyInput.current?.select(), 100);
+        }
+      },
     },
     {
       title: "Priority",
       dataIndex: "EventPriority",
       filters: initialData.eventPriority
         ? initialData.eventPriority.map((pri: any) => {
-            return {
-              text: pri.Priority,
-              value: pri.Priority,
-            };
-          })
+          return {
+            text: pri.Priority,
+            value: pri.Priority,
+          };
+        })
         : [],
       onFilter: (value: any, record: any) => record.EventPriority === value,
     },
@@ -173,10 +199,11 @@ const EventsPage = () => {
             <li key={0}>
               {record.UserName} - {record.UserEmail}
             </li>
-            {record.Contacts.split(";").map((con: string, index: number) => (
+            {record.Contacts.split(",").map((con: string, index: number) => (
               <li key={index + 1}>
-                {con.split(",")[0]}
-                {con.split(",")[1] !== "" ? ` - ${con.split(",")[1]}` : ""}
+                {contactData[con] ? contactData[con].name ? contactData[con].name : "N/A" : ""}
+                {" - "}
+                {contactData[con] ? contactData[con].email ? contactData[con].email : "N/A" : ""}
               </li>
             ))}
           </ul>
@@ -358,7 +385,7 @@ const EventsPage = () => {
         scroll={{
           x: true,
         }}
-        //   onChange={onChange}
+      //   onChange={onChange}
       />
     </Card>
   );

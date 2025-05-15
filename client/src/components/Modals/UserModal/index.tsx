@@ -87,7 +87,7 @@ const UserModal: React.FC<UserModalProps> = ({ open, setOpen, handleOk }) => {
             },
           ]}
         >
-          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+          <Input.Password prefix={<LockOutlined />} placeholder="Password" autoComplete="new-password" />
         </Form.Item>
         <Form.Item
           name="confirmPassword"

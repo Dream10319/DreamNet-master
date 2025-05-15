@@ -24,7 +24,6 @@ const OrganisationsPage = () => {
   const [loading, setLoading] = React.useState(false);
   const searchPropertyInput = React.useRef<InputRef>(null);
   const searchContactInput = React.useRef<InputRef>(null);
-  // const [initialData, setInitialData] = React.useState({});
   const [filters, setFilters] = React.useState([]);
 
   const handleReset = (clearFilters: () => void) => {

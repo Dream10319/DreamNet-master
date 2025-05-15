@@ -15,7 +15,7 @@ export class RentalModel {
   GetRentals = async () => {
     try {
       const request = this.#pool.request();
-      const result = await request.query(`SELECT * FROM [RentalDetailsView]`);
+      const result = await request.query(`SELECT * FROM [RentalDetailsView] WHERE [RentalStatusName] <> 'Retired'`);
 
       return result.recordset;
     } catch (err) {

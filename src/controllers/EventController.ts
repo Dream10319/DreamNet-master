@@ -506,6 +506,9 @@ export class EventController {
       const subject = `${subjectPrefix} ${sourceCode} ${sourceName}`;
 
       for (const contact of contacts) {
+        if (!contact.Email || contact.Email.trim() === '') {
+          continue;
+        }
         const emailBody = `
           Dear ${contact.Name},
   
@@ -559,6 +562,9 @@ export class EventController {
         `${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}`;
 
       for (const contact of contacts) {
+        if (!contact.Email || contact.Email.trim() === '') {
+          continue;
+        }
         const emailBody = `
           ${eventDetail.payload.event.Title}
 
