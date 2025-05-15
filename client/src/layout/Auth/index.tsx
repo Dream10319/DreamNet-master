@@ -10,7 +10,7 @@ interface AuthLayoutProps {
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   const { token } = useSelector((state: RootState) => state.auth);
 
-  return token ? <Navigate replace to="/dashboard" /> : children;
+  return token ? <Navigate replace to="/events" /> : children;
 };
 
 export default AuthLayout;

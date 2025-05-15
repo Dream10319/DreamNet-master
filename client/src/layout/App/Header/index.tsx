@@ -50,10 +50,6 @@ const AppHeader = () => {
     if (authUser) {
       let initialItems: Array<any> = [
         {
-          key: "dashboard",
-          label: <span>Dashboard</span>,
-        },
-        {
           key: "events",
           label: <span>Events</span>,
         },

@@ -1,5 +1,8 @@
 import axios, { AxiosHeaders } from "axios";
 import { ACCESS_TOKEN } from "@/constants";
+import { store } from "@/store";
+import { SignOut } from "@/store/slices/AuthSlice";
+import { message } from "antd";
 
 const API = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -23,24 +26,23 @@ API.interceptors.request.use((config: any) => {
 });
 
 API.interceptors.response.use(
-  (response: any) => {
-    return response.data;
-  },
+  (response: any) => response.data,
   async (error: any) => {
     try {
-      if (error.response.status == 401) {
-        if (error.response.data.auth) {
-          localStorage.removeItem(ACCESS_TOKEN);
-          window.location.href = window.location.origin;
-        } else {
-          return Promise.reject(error);
-        }
-      } else {
-        return Promise.reject(error);
+      const isExpired =
+        error?.response?.status === 401 && error?.response?.data?.expired;
+
+      if (isExpired) {
+        message.error("Session expired, Please signin again.");
+        localStorage.removeItem(ACCESS_TOKEN);
+        store.dispatch(SignOut());
+        window.location.href = `${window.location.origin}/signin`;
       }
     } catch (e) {
-      console.log(error);
+      console.error("Global error handler failed:", e);
     }
+
+    return Promise.reject(error);
   }
 );
 

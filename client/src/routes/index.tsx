@@ -11,8 +11,6 @@ import AppLayout from "@/layout/App";
 
 // Pages
 import SignInPage from "@/pages/Auth/SignIn";
-// import SignUpPage from "@/pages/Auth/SignUp";
-import DashboardPage from "@/pages/App/Dashboard";
 import { Event } from "@/pages/App/Events";
 import RentalsPage from "@/pages/App/Rentals";
 import ProjectsPage from "@/pages/App/Projects";
@@ -30,14 +28,6 @@ const AppRouter = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to={"/signin"} />} />
-        <Route
-          path="/dashboard"
-          element={
-            <AppLayout>
-              <DashboardPage />
-            </AppLayout>
-          }
-        />
         <Route
           path="/events"
           element={
@@ -114,15 +104,6 @@ const AppRouter = () => {
             </AuthLayout>
           }
         />
-        {/* <Route
-          path="/signup"
-          element={
-            <AuthLayout>
-              <SignUpPage />
-            </AuthLayout>
-          }
-        /> */}
-        <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
     </Router>
   );

@@ -57,37 +57,6 @@ export class AuthController {
     }
   };
 
-  // SignUp = async (req: Request, res: Response) => {
-  //   try {
-  //     const { email, password, name } = req.body;
-  //     const existingUser = await this.#userModel.GetUserByEmail(
-  //       email.toLowerCase()
-  //     );
-  //     if (existingUser) {
-  //       return res
-  //         .status(401)
-  //         .json({ status: false, message: "Email already in use!" });
-  //     }
-
-  //     const hashedPassword = await bcrypt.hash(password, 10);
-  //     await this.#userModel.RegisterUser(
-  //       email.toLowerCase(),
-  //       hashedPassword,
-  //       name
-  //     );
-
-  //     return res
-  //       .status(200)
-  //       .json({ status: true, message: "User registered successfully!" });
-  //   } catch (err) {
-  //     return res.status(500).json({
-  //       status: false,
-  //       message: "Server error, please try again later.",
-  //       error: String(err),
-  //     });
-  //   }
-  // };
-
   GetCurrentUser = async (req: Request, res: Response) => {
     try {
       const { userId } = req.body;
