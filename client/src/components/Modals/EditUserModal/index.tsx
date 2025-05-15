@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Flex, Input, Modal, Form, Typography, Switch } from "antd";
+import { Button, Flex, Input, Modal, Form, Typography, Switch, Select } from "antd";
 import { MessageContext } from "@/App";
 import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
 import { apis } from "@/apis";
@@ -60,6 +60,7 @@ const EditUserModal: React.FC<UserModalProps> = ({ open, setOpen, userId, handle
                 form.setFieldsValue({
                     UserName: result.UserName,
                     UserEmail: result.UserEmail,
+                    UserRole: result.UserRole,
                 });
             }
 
@@ -112,6 +113,24 @@ const EditUserModal: React.FC<UserModalProps> = ({ open, setOpen, userId, handle
                 >
                     <Input placeholder="Email" type="email" prefix={<MailOutlined />} />
                 </Form.Item>
+                <Form.Item
+                    label="Role"
+                    name="UserRole"
+                    rules={[{ required: true, message: "Please select role!" }]}
+                    >
+                    <Select
+                        options={[
+                            {
+                                value: "USER",
+                                label: "USER",
+                            },
+                            {
+                                value: "ADMIN",
+                                label: "ADMIN",
+                            },
+                      ] }
+                    />
+                    </Form.Item>
                 <Flex style={{marginBottom: 20}} gap={5}>                    
                     <Switch defaultChecked={false} onChange={onChangePassword} />
                     <Typography>

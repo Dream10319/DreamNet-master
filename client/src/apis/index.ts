@@ -89,7 +89,7 @@ const SendEventEmail = (data: {
 }) => API.post('/api/v1/events/send-email', data);
 const SendEventNoteEmail = (data: {
   contacts: { email: string; name: string }[];
-  eventID: string;
+  eventDetail: string;
   note: string;
   userName: string;
   updateTime: string;

@@ -545,13 +545,13 @@ export class EventController {
     try {
       const {
         contacts,
-        eventID,
+        eventDetail,
         note,
         userName,
         updateTime,
       } = req.body;
 
-      const subject = `KTS ${eventID}: ${eventID}`;
+      const subject = `KTS EVENT UPDATE ${eventDetail.payload.event.Code} ${eventDetail.payload.event.Source}`;
       const date = new Date(updateTime);
       const pad = (n: number) => n.toString().padStart(2, '0');
       const formatted =
@@ -560,6 +560,8 @@ export class EventController {
 
       for (const contact of contacts) {
         const emailBody = `
+          ${eventDetail.payload.event.Title}
+
           Note added by ${userName} ${formatted}:
 
           ${note}

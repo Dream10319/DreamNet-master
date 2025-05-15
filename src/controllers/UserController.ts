@@ -64,7 +64,7 @@ export class UserController {
   UpdateUserById = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const { UserName, UserEmail, UserPassword, statusPassword } = req.body;
+      const { UserName, UserEmail, UserRole, UserPassword, statusPassword } = req.body;
 
       const existingUser = await this.#userModel.GetUserById(Number(id));
       if (!existingUser) {
@@ -90,6 +90,7 @@ export class UserController {
         Number(id),
         UserName,
         UserEmail,
+        UserRole,
         hashedPassword,
         statusPassword
       );

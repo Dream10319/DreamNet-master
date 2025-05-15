@@ -39,12 +39,12 @@ const NoteModal: React.FC<NoteModalProps> = ({
           note: values.note,
         });
       if (response.status) {
-        const resDetail: any = await apis.GetEventDetailById(id as string);
+        const eventDetail: any = await apis.GetEventDetailById(id as string);
         const resContacts: any = await apis.GetEventContactListById(id as string);
         const tempContacts = [
           {
-            Email: resDetail.payload.event.UserEmail,
-            Name: resDetail.payload.event.UserName
+            Email: eventDetail.payload.event.UserEmail,
+            Name: eventDetail.payload.event.UserName
           },
           ...resContacts.payload.contacts.map((contact: any) => {
             const tempContact = contacts.find(
@@ -59,7 +59,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
 
         const reqBody = {
           contacts: tempContacts,
-          eventID: id as string,
+          eventDetail: eventDetail as string,
           note: response.payload[0].NoteText as string,
           userName: response.payload[0].UserName as string,
           updateTime: response.payload[0].NoteDate as string,

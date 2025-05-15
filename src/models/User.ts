@@ -70,7 +70,7 @@ export class UserModel {
     }
   };
 
-  UpdateUserById = async (userId: number, name: string, email: string, password: string, statusPassword: any) => {
+  UpdateUserById = async (userId: number, name: string, email: string, role: string, password: string, statusPassword: any) => {
     try {
       let query;
       if (statusPassword) {
@@ -79,6 +79,7 @@ export class UserModel {
           SET UserEmail = @email,
               UserPassword = @password,
               UserName = @name,
+              UserRole = @role,
               UserUpdatedAt = @updatedAt
           WHERE UserId = @userId
         `;
@@ -87,6 +88,7 @@ export class UserModel {
           UPDATE [User]
           SET UserEmail = @email,
               UserName = @name,
+              UserRole = @role,
               UserUpdatedAt = @updatedAt
           WHERE UserId = @userId
         `;
@@ -99,6 +101,7 @@ export class UserModel {
       request.input("email", DB.sql.VarChar, email);
       request.input("password", DB.sql.VarChar, password);
       request.input("name", DB.sql.VarChar, name);
+      request.input("role", DB.sql.VarChar, role);
       request.input("updatedAt", DB.sql.DateTime, updatedAt);
 
       await request.query(query);
@@ -112,9 +115,8 @@ export class UserModel {
   GetUserList = async () => {
     try {
       const request = this.#pool.request();
-      request.input("UserRole", DB.sql.VarChar, "USER");
       const result = await request.query(
-        `SELECT UserId, UserEmail, UserName, UserRole, UserCreatedAt FROM [User] WHERE [UserRole] = @UserRole`
+        `SELECT UserId, UserEmail, UserName, UserRole, UserCreatedAt FROM [User]`
       );
       return result.recordset;
     } catch (err) {

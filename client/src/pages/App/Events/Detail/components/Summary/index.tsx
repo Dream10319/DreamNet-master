@@ -244,7 +244,7 @@ const EventSummary: React.FC<EventSummaryProps> = ({
             <Form.Item label="Source">
               <Input
                 disabled
-                value={`${eventDetail.Source} (${eventDetail.Code})`}
+                value={`${eventDetail.Code} (${eventDetail.Source})`}
               />
             </Form.Item>
           </Col>

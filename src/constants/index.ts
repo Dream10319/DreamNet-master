@@ -1,1 +1,1 @@
-export const EXPIRE_IN = 3600 * 24 * 7;
+export const EXPIRE_IN = 3600;
