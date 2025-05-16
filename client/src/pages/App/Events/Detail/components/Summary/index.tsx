@@ -72,6 +72,7 @@ const EventSummary: React.FC<EventSummaryProps> = ({
     },
   });
 
+  const [dirtyFields, setDirtyFields] = React.useState<Record<string, boolean>>({});
 
   const SaveEvent = async (values: any) => {
     try {
@@ -82,6 +83,7 @@ const EventSummary: React.FC<EventSummaryProps> = ({
       const response: any = await apis.UpdateEventById(id, values);
       if (response.status) {
         getEvent();
+        setDirtyFields({});
       }
 
       const resContacts: any = await apis.GetEventContactListById(id);
@@ -230,6 +232,15 @@ const EventSummary: React.FC<EventSummaryProps> = ({
         layout="horizontal"
         className="summary-form"
         onFinish={SaveEvent}
+        onValuesChange={(changedValues) => {
+          setDirtyFields((prev) => ({
+            ...prev,
+            ...Object.keys(changedValues).reduce((acc, key) => {
+              acc[key] = true;
+              return acc;
+            }, {} as Record<string, boolean>)
+          }));
+        }}
         form={form}
       >
         <Row>
@@ -485,7 +496,7 @@ const EventSummary: React.FC<EventSummaryProps> = ({
               initialValue={eventDetail.Description}
               rules={[{ required: true, message: "Please input details!" }]}
             >
-              <Input.TextArea style={{ resize: "none", height: 100 }} />
+              <Input.TextArea style={{ resize: "none", height: 100, color: dirtyFields["Description"] ? "red" : "black" }} />
             </Form.Item>
           </Col>
           <Col span={24} style={{ padding: "0px 5px" }}>
