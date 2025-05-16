@@ -41,7 +41,14 @@ const UsersPage = () => {
     {
       title: "Created Date",
       dataIndex: "UserCreatedAt",
-      render: (createdDate: any) => new Date(createdDate).toLocaleDateString(),
+      render: (createdDate: any) => {
+        if (!createdDate) return "";
+        const date = new Date(createdDate);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
     },
     {
       title: "Actions",

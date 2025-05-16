@@ -178,8 +178,14 @@ const EventsPage = () => {
     {
       title: "Due",
       dataIndex: "DueDate",
-      render: (DueDate: any) =>
-        DueDate ? new Date(DueDate).toLocaleDateString() : "",
+      render: (DueDate: any) => {
+        if (!DueDate) return "";
+        const date = new Date(DueDate);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
       sorter: (a: any, b: any) => {
         if (a.DueDate === null && b.DueDate === null) return 0;
         if (a.DueDate === null) return -1;
@@ -280,13 +286,18 @@ const EventsPage = () => {
     },
     {
       title: "Last Update",
-      render: (_: any, record: any) =>
-        new Date(
-          record.LastUpdate ? record.LastUpdate : record.CreateDate
-        ).toLocaleDateString(),
+      render: (_: any, record: any) => {
+        const rawDate = record.LastUpdate || record.CreateDate;
+        if (!rawDate) return "";
+        const date = new Date(rawDate);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
       sorter: (a: any, b: any) => {
-        const aDate = a.LastUpdate ? a.LastUpdate : a.CreateDate;
-        const bDate = b.LastUpdate ? b.LastUpdate : b.CreateDate;
+        const aDate = a.LastUpdate || a.CreateDate;
+        const bDate = b.LastUpdate || b.CreateDate;
         if (aDate === null && bDate === null) return 0;
         if (aDate === null) return -1;
         if (bDate === null) return 1;
