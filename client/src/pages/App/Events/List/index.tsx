@@ -14,10 +14,12 @@ const EventsPage = () => {
     ContactId: string;
     Email: string;
     ContactName: string;
+    OrgName: string;
   }
   interface ContactValue {
     email: string;
     name: string;
+    orgname: string;
   }
   interface InitialData {
     contacts: Contact[];
@@ -43,6 +45,7 @@ const EventsPage = () => {
       tempData[contact.ContactId] = {
         email: contact.Email,
         name: contact.ContactName,
+        orgname: contact.OrgName,
       };
     });
     setContactdata(tempData);
@@ -195,94 +198,27 @@ const EventsPage = () => {
     },
     {
       title: "Assigned To",
-      dataIndex: "AssignedTo",
-    },
-    {
-      title: "Contact",
-      render: (_: any, record: any) =>
-        record.Contacts && record.Contacts.split(";").length > 0 ? (
+      render: (_: any, record: any) => {
+        if (!record.Contacts) return null;
+
+        const contactIds: string[] = record.Contacts.split(",").map((id: string) => id.trim());
+
+        const uniqueOrgs: string[] = Array.from(
+          new Set(
+            contactIds
+              .map((id) => contactData[id]?.orgname || null)
+              .filter((orgname): orgname is string => Boolean(orgname))
+          )
+        );
+
+        return (
           <ul style={{ margin: 0 }}>
-            <li key={0}>
-              {record.UserName} - {record.UserEmail}
-            </li>
-            {record.Contacts.split(",").map((con: string, index: number) => (
-              <li key={index + 1}>
-                {contactData[con] ? contactData[con].name ? contactData[con].name : "N/A" : ""}
-                {" - "}
-                {contactData[con] ? contactData[con].email ? contactData[con].email : "N/A" : ""}
-              </li>
+            {uniqueOrgs.map((org, index) => (
+              <li key={index}>{org}</li>
             ))}
           </ul>
-        ) : null,
-      // filterDropdown: ({
-      //   setSelectedKeys,
-      //   selectedKeys,
-      //   confirm,
-      //   clearFilters,
-      //   close,
-      // }: FilterDropdownProps) => (
-      //   <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-      //     <Input
-      //       ref={searchContactInput}
-      //       placeholder={`Search Contact`}
-      //       value={selectedKeys[0]}
-      //       onChange={(e) => {
-      //         setSelectedKeys(e.target.value ? [e.target.value] : []);
-      //       }}
-      //       onPressEnter={() => confirm()}
-      //       style={{ marginBottom: 8, display: "block" }}
-      //     />
-      //     <Space>
-      //       <Button
-      //         type="primary"
-      //         onClick={() => confirm()}
-      //         icon={<SearchOutlined />}
-      //         size="small"
-      //         style={{ width: 90 }}
-      //       >
-      //         Search
-      //       </Button>
-      //       <Button
-      //         onClick={() => clearFilters && handleReset(clearFilters)}
-      //         size="small"
-      //         style={{ width: 90 }}
-      //       >
-      //         Reset
-      //       </Button>
-      //       <Button
-      //         type="link"
-      //         size="small"
-      //         onClick={() => {
-      //           confirm({ closeDropdown: false });
-      //         }}
-      //       >
-      //         Filter
-      //       </Button>
-      //       <Button
-      //         type="link"
-      //         size="small"
-      //         onClick={() => {
-      //           close();
-      //         }}
-      //       >
-      //         close
-      //       </Button>
-      //     </Space>
-      //   </div>
-      // ),
-      // filterIcon: (filtered: boolean) => (
-      //   <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
-      // ),
-      // onFilter: (value: any, record: any) =>
-      //   record.ContactNames &&
-      //   record.ContactNames.toString()
-      //     .toLowerCase()
-      //     .includes((value as string).toLowerCase()),
-      // onFilterDropdownOpenChange: (visible: boolean) => {
-      //   if (visible) {
-      //     setTimeout(() => searchPropertyInput.current?.select(), 100);
-      //   }
-      // },
+        );
+      },
     },
     {
       title: "Last Update",
