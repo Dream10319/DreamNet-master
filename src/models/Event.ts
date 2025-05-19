@@ -133,6 +133,17 @@ export class EventModel {
     }
   };
 
+  GetEventCode = async () => {
+    try {
+      const request = this.#pool.request();
+      const result = await request.query(`SELECT DISTINCT Code FROM [Event]`);
+
+      return result.recordset;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   GetEventPriority = async () => {
     try {
       const request = this.#pool.request();

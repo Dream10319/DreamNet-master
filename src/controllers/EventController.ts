@@ -119,6 +119,7 @@ export class EventController {
       funcs.push(this.#eventModel.GetEventType());
       funcs.push(this.#eventModel.GetAllContacts());
       funcs.push(this.#eventModel.GetAttachmentType());
+      funcs.push(this.#eventModel.GetEventCode());
       const results = await Promise.all(funcs);
 
       return res.status(200).json({
@@ -129,6 +130,7 @@ export class EventController {
           eventType: results[2],
           contacts: results[3],
           attachmentType: results[4],
+          code: results[5]
         },
       });
     } catch (err) {
