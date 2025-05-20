@@ -14,10 +14,10 @@ import { apis } from "@/apis";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import dayjs, { Dayjs } from "dayjs";
 import { ExportJsonCsv } from "react-export-json-csv";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import html2pdf from "html2pdf.js";
 
 const ReportsPage = () => {
+  const tableRef = useRef<HTMLDivElement>(null);
   interface PrintableEvent {
     Code: string;
     EventName: string;
@@ -124,7 +124,7 @@ const ReportsPage = () => {
       title: "Code",
       dataIndex: "Code",
       sorter: (a: any, b: any) => a.Code.localeCompare(b.Code),
-      filters: initialData.code.map((c: any) => ({ text: c.Code, value: c.Code })),
+      filters: initialData.code?.map((c: any) => ({ text: c.Code, value: c.Code })),
       onFilter: (value: any, record: any) => record.Code === value,
     },
     {
@@ -135,13 +135,13 @@ const ReportsPage = () => {
     {
       title: "Priority",
       dataIndex: "EventPriority",
-      filters: initialData.eventPriority.map((p: any) => ({ text: p.Priority, value: p.Priority })),
+      filters: initialData.eventPriority?.map((p: any) => ({ text: p.Priority, value: p.Priority })),
       onFilter: (value: any, record: any) => record.EventPriority === value,
     },
     {
       title: "Status",
       dataIndex: "EventStatus",
-      filters: initialData.eventStatus.map((s: any) => ({ text: s.Status, value: s.Status })),
+      filters: initialData.eventStatus?.map((s: any) => ({ text: s.Status, value: s.Status })),
       onFilter: (value: any, record: any) => record.EventStatus === value,
     },
     {
@@ -222,7 +222,7 @@ const ReportsPage = () => {
     {
       title: "Type",
       dataIndex: "EventType",
-      filters: initialData.eventType.map((t: any) => ({ text: t.Type, value: t.Type })),
+      filters: initialData.eventType?.map((t: any) => ({ text: t.Type, value: t.Type })),
       onFilter: (value: any, record: any) => record.EventType === value,
     },
   ];
@@ -257,7 +257,7 @@ const ReportsPage = () => {
   }, []);
 
   useEffect(() => {
-    const tempForPrint: PrintableEvent[] = filteredData.map((item) => {
+    const tempForPrint: PrintableEvent[] = filteredData?.map((item) => {
       const matchedPriority = initialData.eventPriority.find((p: any) => p.EPriorityId === item.Priority);
       const matchedStatus = initialData.eventStatus.find((s: any) => s.EStatusId === item.Status);
       const matchedType = initialData.eventType.find((t: any) => t.ETypeId === item.Type);
@@ -275,59 +275,113 @@ const ReportsPage = () => {
     setEventsForPrint(tempForPrint);
   }, [filteredData, initialData]);
 
+
   const exportPDF = () => {
-    const doc = new jsPDF();
-    const tableColumn = headers.map((h) => h.name);
-    const tableRows = eventsForPrint.map((item) => [
-      item.Code,
-      item.EventName,
-      item.Priority,
-      item.Status,
-      item.Source,
-      dayjs(item.Due).format("MM/DD/YYYY"),
-      item.Type,
-    ]);
-    doc.text("Events Listing", 14, 15);
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 20,
+    if (!tableRef.current) return;
+
+    // Clone the table container (deep clone)
+    const clone = tableRef.current.cloneNode(true) as HTMLElement;
+
+    // Hide pagination inside the clone only
+    const clonePagination = clone.querySelector("ul.ant-pagination") as HTMLElement | null;
+    if (clonePagination) {
+      clonePagination.style.display = "none";
+    }
+
+    // Hide all expand/collapse buttons inside the clone
+    const expandButtons = clone.querySelectorAll(".ant-table-row-expand-icon");
+    expandButtons.forEach(btn => {
+      (btn as HTMLElement).style.display = "none";
     });
-    doc.save("events-listing.pdf");
+
+    // Create title element
+    const title = document.createElement("h2");
+    title.innerText = "Events List";
+    title.style.textAlign = "center";
+    title.style.marginBottom = "16px";
+
+    // Insert title at top of clone
+    clone.insertBefore(title, clone.firstChild);
+
+    // Create a hidden container for cloning
+    const hiddenContainer = document.createElement("div");
+    hiddenContainer.style.position = "fixed";
+    hiddenContainer.style.left = "-9999px";
+    hiddenContainer.style.top = "0";
+    hiddenContainer.style.width = "1000px"; // to avoid layout shrink
+    hiddenContainer.appendChild(clone);
+    document.body.appendChild(hiddenContainer);
+
+    const opt = {
+      margin: 0.5,
+      filename: "table-export.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+      },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    };
+
+    html2pdf()
+      .set(opt)
+      .from(clone)
+      .save()
+      .finally(() => {
+        // Clean up the hidden clone container after export
+        document.body.removeChild(hiddenContainer);
+      });
   };
 
+
+
   return (
-    <Card
-      title={<Typography.Title level={4} style={{ margin: 0 }}>EVENTS LISTING</Typography.Title>}
-      extra={
-        <Space>
-          <ExportJsonCsv headers={headers} items={eventsForPrint} fileTitle="events-listing.csv">
-            Export CSV
-          </ExportJsonCsv>
-          <Button type="primary" icon={<DownloadOutlined />} onClick={exportPDF}>
-            Export PDF
-          </Button>
-        </Space>
-      }
-    >
-      <Table
-        dataSource={events}
-        rowKey="EventId"
-        bordered
-        columns={columns}
-        expandedRowRender={expandedRowRender}
-        expandedRowKeys={expandedRowKeys}
-        onExpand={handleExpand}
-        expandIconColumnIndex={columns.length}
-        loading={loading}
-        size="small"
-        pagination={{ pageSize: 20 }}
-        scroll={{ x: true }}
-        onChange={(_pagination, _filters, _sorter, extra) => {
-          setFilteredData(extra.currentDataSource); // Always update filtered data
-        }}
-      />
-    </Card>
+    <>
+      <style>
+        {`
+      @media print {
+        ul.ant-pagination {
+          display: none !important;
+        }
+        }
+    `}
+      </style>
+      <Card
+        title={<Typography.Title level={4} style={{ margin: 0 }}>EVENTS LISTING</Typography.Title>}
+        extra={
+          <Space>
+            <ExportJsonCsv headers={headers} items={eventsForPrint} fileTitle="event-listing.csv" style={{ border: 'None', background: 'None' }}>
+              <Button type="primary" icon={<DownloadOutlined />}>
+                Export CSV
+              </Button>
+            </ExportJsonCsv>
+            <Button type="primary" icon={<DownloadOutlined />} onClick={exportPDF}>
+              Export PDF
+            </Button>
+          </Space>
+        }
+      >
+        <div ref={tableRef}>
+          <Table
+            dataSource={events}
+            rowKey="EventId"
+            bordered
+            columns={columns}
+            expandedRowRender={expandedRowRender}
+            expandedRowKeys={expandedRowKeys}
+            onExpand={handleExpand}
+            expandIconColumnIndex={columns.length}
+            loading={loading}
+            size="small"
+            pagination={{ pageSize: 20 }}
+            scroll={{ x: true }}
+            onChange={(_pagination, _filters, _sorter, extra) => {
+              setFilteredData(extra.currentDataSource); // Always update filtered data
+            }}
+          />
+        </div>
+      </Card>
+    </>
   );
 };
 
