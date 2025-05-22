@@ -81,6 +81,7 @@ const ReportsPage = () => {
     const subColumns = [
       {
         title: "Date",
+        width: 300,
         dataIndex: "NoteDate",
         key: "date",
         render: (value: string) =>
@@ -93,7 +94,7 @@ const ReportsPage = () => {
             hour12: true,
           }),
       },
-      { title: "User", dataIndex: "UserEmail", key: "user" },
+      { title: "User", dataIndex: "UserEmail", key: "user", width: 300 },
       { title: "Note", dataIndex: "NoteText", key: "note" },
     ];
     const data = subTableData[record.EventId] || [];
@@ -121,33 +122,12 @@ const ReportsPage = () => {
 
   const columns = [
     {
-      title: "Code",
+      title: "Code + Source",
       dataIndex: "Code",
-      sorter: (a: any, b: any) => a.Code.localeCompare(b.Code),
-      filters: initialData.code?.map((c: any) => ({ text: c.Code, value: c.Code })),
-      onFilter: (value: any, record: any) => record.Code === value,
-    },
-    {
-      title: "EventName",
-      dataIndex: "Title",
-      sorter: (a: any, b: any) => a.Title.localeCompare(b.Title),
-    },
-    {
-      title: "Priority",
-      dataIndex: "EventPriority",
-      filters: initialData.eventPriority?.map((p: any) => ({ text: p.Priority, value: p.Priority })),
-      onFilter: (value: any, record: any) => record.EventPriority === value,
-    },
-    {
-      title: "Status",
-      dataIndex: "EventStatus",
-      filters: initialData.eventStatus?.map((s: any) => ({ text: s.Status, value: s.Status })),
-      onFilter: (value: any, record: any) => record.EventStatus === value,
-    },
-    {
-      title: "Source",
-      dataIndex: "Source",
-      sorter: (a: any, b: any) => a.Source.localeCompare(b.Source),
+      width: 300,
+      sorter: (a: any, b: any) =>
+        `${a.Code} ${a.Source}`.localeCompare(`${b.Code} ${b.Source}`),
+      render: (_: any, record: any) => `${record.Code} (${record.Source})`,
       filterDropdown: ({
         setSelectedKeys,
         selectedKeys,
@@ -158,7 +138,7 @@ const ReportsPage = () => {
         <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
           <Input
             ref={searchPropertyInput}
-            placeholder="Search Source"
+            placeholder="Search Code + Source"
             value={selectedKeys[0]}
             onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
             onPressEnter={() => confirm()}
@@ -182,12 +162,30 @@ const ReportsPage = () => {
       ),
       filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />,
       onFilter: (value: any, record: any) =>
-        record.Source.toString().toLowerCase().includes((value as string).toLowerCase()),
+        `${record.Code} ${record.Source}`.toLowerCase().includes((value as string).toLowerCase()),
       onFilterDropdownOpenChange: (visible: boolean) => {
         if (visible) {
           setTimeout(() => searchPropertyInput.current?.select(), 100);
         }
       },
+    },
+    {
+      title: "EventName",
+      dataIndex: "Title",
+      width: 700,
+      sorter: (a: any, b: any) => a.Title.localeCompare(b.Title),
+    },
+    {
+      title: "Priority",
+      dataIndex: "EventPriority",
+      filters: initialData.eventPriority?.map((p: any) => ({ text: p.Priority, value: p.Priority })),
+      onFilter: (value: any, record: any) => record.EventPriority === value,
+    },
+    {
+      title: "Status",
+      dataIndex: "EventStatus",
+      filters: initialData.eventStatus?.map((s: any) => ({ text: s.Status, value: s.Status })),
+      onFilter: (value: any, record: any) => record.EventStatus === value,
     },
     {
       title: "Due",
@@ -315,7 +313,7 @@ const ReportsPage = () => {
     const opt = {
       margin: 0.5,
       filename: "table-export.pdf",
-      image: { type: "jpeg", quality: 0.98 },
+      image: { type: "jpeg", quality: 10},
       html2canvas: {
         scale: 2,
         useCORS: true,
