@@ -189,7 +189,7 @@ const ReportsPage = () => {
     {
       title: "Due",
       dataIndex: "DueDate",
-      render: (date: string) => dayjs(date).format("MM/DD/YYYY"),
+      render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: FilterDropdownProps) => {
         const selectedDate = selectedKeys[0] ? dayjs(selectedKeys[0] as string) : null;
         return (
@@ -197,7 +197,7 @@ const ReportsPage = () => {
             <DatePicker
               value={selectedDate}
               onChange={(date: Dayjs | null) => {
-                const formatted = date ? date.format("MM/DD/YYYY") : "";
+                const formatted = date ? date.format("DD/MM/YYYY") : "";
                 setSelectedKeys(formatted ? [formatted] : []);
               }}
               style={{ marginBottom: 8, display: "block" }}
@@ -212,7 +212,7 @@ const ReportsPage = () => {
         );
       },
       onFilter: (value: any, record: EventRecord) =>
-        dayjs(record.DueDate).format("MM/DD/YYYY") === value,
+        dayjs(record.DueDate).format("DD/MM/YYYY") === value,
       sorter: (a: any, b: any) =>
         new Date(a.DueDate).getTime() - new Date(b.DueDate).getTime(),
     },
@@ -281,7 +281,7 @@ const ReportsPage = () => {
       item.EventName,
       item.Priority,
       item.Status,
-      dayjs(item.Due).format("MM/DD/YYYY"),
+      dayjs(item.Due).format("DD/MM/YYYY"),
       item.Type,
     ]);
 
@@ -347,7 +347,7 @@ const ReportsPage = () => {
           pagination={{ pageSize: 20 }}
           scroll={{ x: true }}
           onChange={(_pagination, _filters, _sorter, extra) => {
-            setFilteredData(extra.currentDataSource); // Always update filtered data
+            setFilteredData(extra.currentDataSource);
           }}
         />
       </div>
