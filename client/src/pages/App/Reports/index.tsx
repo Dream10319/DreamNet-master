@@ -14,7 +14,8 @@ import { apis } from "@/apis";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import dayjs, { Dayjs } from "dayjs";
 import { ExportJsonCsv } from "react-export-json-csv";
-import html2pdf from "html2pdf.js";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const ReportsPage = () => {
   const tableRef = useRef<HTMLDivElement>(null);
@@ -275,63 +276,49 @@ const ReportsPage = () => {
 
 
   const exportPDF = () => {
-    if (!tableRef.current) return;
+    const doc = new jsPDF({ orientation: "landscape" });
 
-    // Clone the table container (deep clone)
-    const clone = tableRef.current.cloneNode(true) as HTMLElement;
+    const tableColumn = headers.map((h) => h.name);
+    const tableRows = eventsForPrint.map((item) => [
+      item.Code + " (" + item.Source + ")",
+      item.EventName,
+      item.Priority,
+      item.Status,
+      item.Source,
+      dayjs(item.Due).format("MM/DD/YYYY"),
+      item.Type,
+    ]);
 
-    // Hide pagination inside the clone only
-    const clonePagination = clone.querySelector("ul.ant-pagination") as HTMLElement | null;
-    if (clonePagination) {
-      clonePagination.style.display = "none";
-    }
+    const now = new Date();
+    const formattedDate = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+    const headerText = `KTS Group Events Listing ${formattedDate}`;
 
-    // Hide all expand/collapse buttons inside the clone
-    const expandButtons = clone.querySelectorAll(".ant-table-row-expand-icon");
-    expandButtons.forEach(btn => {
-      (btn as HTMLElement).style.display = "none";
-    });
+    let pageNumber = 0;
 
-    // Create title element
-    const title = document.createElement("h2");
-    title.innerText = "Events List";
-    title.style.textAlign = "center";
-    title.style.marginBottom = "16px";
-
-    // Insert title at top of clone
-    clone.insertBefore(title, clone.firstChild);
-
-    // Create a hidden container for cloning
-    const hiddenContainer = document.createElement("div");
-    hiddenContainer.style.position = "fixed";
-    hiddenContainer.style.left = "-9999px";
-    hiddenContainer.style.top = "0";
-    hiddenContainer.style.width = "1000px"; // to avoid layout shrink
-    hiddenContainer.appendChild(clone);
-    document.body.appendChild(hiddenContainer);
-
-    const opt = {
-      margin: 0.5,
-      filename: "table-export.pdf",
-      image: { type: "jpeg", quality: 10},
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      margin: { top: 30 }, // Ensure space for custom header
+      didDrawPage: (data) => {
+        pageNumber++;
+    
+        // Header
+        doc.setFontSize(12);
+        doc.text(headerText, 14, 20); // Draw above the table
+    
+        // Footer
+        const pageSize = doc.internal.pageSize;
+        const pageHeight = pageSize.height || pageSize.getHeight();
+        const pageWidth = pageSize.width || pageSize.getWidth();
+        doc.setFontSize(10);
+        doc.text(`Page ${pageNumber}`, pageWidth / 2, pageHeight - 10, { align: "center" });
       },
-      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-    };
+    });
+    
 
-    html2pdf()
-      .set(opt)
-      .from(clone)
-      .save()
-      .finally(() => {
-        // Clean up the hidden clone container after export
-        document.body.removeChild(hiddenContainer);
-      });
+    doc.save("events-listing.pdf");
   };
-
-
 
   return (
     <>
