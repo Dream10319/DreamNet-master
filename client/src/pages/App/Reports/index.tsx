@@ -24,7 +24,6 @@ const ReportsPage = () => {
     EventName: string;
     Priority: string;
     Status: string;
-    Source: string;
     Due: string;
     Type: string;
   }
@@ -69,11 +68,10 @@ const ReportsPage = () => {
   const searchPropertyInput = useRef<InputRef>(null);
 
   const headers = [
-    { key: "Code", name: "Code" },
+    { key: "Code", name: "Code + Source" },
     { key: "EventName", name: "EventName" },
     { key: "Priority", name: "Priority" },
     { key: "Status", name: "Status" },
-    { key: "Source", name: "Source" },
     { key: "Due", name: "Due" },
     { key: "Type", name: "Type" },
   ];
@@ -262,11 +260,10 @@ const ReportsPage = () => {
       const matchedType = initialData.eventType.find((t: any) => t.ETypeId === item.Type);
 
       return {
-        Code: item.Code,
+        Code: `${item.Code} (${item.Source})`,
         EventName: item.Title,
         Priority: matchedPriority?.Priority || item.EventPriority || "",
         Status: matchedStatus?.Status || item.EventStatus || "",
-        Source: item.Source,
         Due: item.DueDate,
         Type: matchedType?.Type || item.EventType || "",
       };
@@ -280,11 +277,10 @@ const ReportsPage = () => {
 
     const tableColumn = headers.map((h) => h.name);
     const tableRows = eventsForPrint.map((item) => [
-      item.Code + " (" + item.Source + ")",
+      item.Code,
       item.EventName,
       item.Priority,
       item.Status,
-      item.Source,
       dayjs(item.Due).format("MM/DD/YYYY"),
       item.Type,
     ]);
@@ -300,13 +296,13 @@ const ReportsPage = () => {
       body: tableRows,
       startY: 30,
       margin: { top: 30 }, // Ensure space for custom header
-      didDrawPage: (data) => {
+      didDrawPage: () => {
         pageNumber++;
-    
+
         // Header
         doc.setFontSize(12);
         doc.text(headerText, 14, 20); // Draw above the table
-    
+
         // Footer
         const pageSize = doc.internal.pageSize;
         const pageHeight = pageSize.height || pageSize.getHeight();
@@ -315,58 +311,47 @@ const ReportsPage = () => {
         doc.text(`Page ${pageNumber}`, pageWidth / 2, pageHeight - 10, { align: "center" });
       },
     });
-    
+
 
     doc.save("events-listing.pdf");
   };
 
   return (
-    <>
-      <style>
-        {`
-      @media print {
-        ul.ant-pagination {
-          display: none !important;
-        }
-        }
-    `}
-      </style>
-      <Card
-        title={<Typography.Title level={4} style={{ margin: 0 }}>EVENTS LISTING</Typography.Title>}
-        extra={
-          <Space>
-            <ExportJsonCsv headers={headers} items={eventsForPrint} fileTitle="event-listing.csv" style={{ border: 'None', background: 'None' }}>
-              <Button type="primary" icon={<DownloadOutlined />}>
-                Export CSV
-              </Button>
-            </ExportJsonCsv>
-            <Button type="primary" icon={<DownloadOutlined />} onClick={exportPDF}>
-              Export PDF
+    <Card
+      title={<Typography.Title level={4} style={{ margin: 0 }}>EVENTS LISTING</Typography.Title>}
+      extra={
+        <Space>
+          <ExportJsonCsv headers={headers} items={eventsForPrint} fileTitle="event-listing.csv" style={{ border: 'None', background: 'None' }}>
+            <Button type="primary" icon={<DownloadOutlined />}>
+              Export CSV
             </Button>
-          </Space>
-        }
-      >
-        <div ref={tableRef}>
-          <Table
-            dataSource={events}
-            rowKey="EventId"
-            bordered
-            columns={columns}
-            expandedRowRender={expandedRowRender}
-            expandedRowKeys={expandedRowKeys}
-            onExpand={handleExpand}
-            expandIconColumnIndex={columns.length}
-            loading={loading}
-            size="small"
-            pagination={{ pageSize: 20 }}
-            scroll={{ x: true }}
-            onChange={(_pagination, _filters, _sorter, extra) => {
-              setFilteredData(extra.currentDataSource); // Always update filtered data
-            }}
-          />
-        </div>
-      </Card>
-    </>
+          </ExportJsonCsv>
+          <Button type="primary" icon={<DownloadOutlined />} onClick={exportPDF}>
+            Export PDF
+          </Button>
+        </Space>
+      }
+    >
+      <div ref={tableRef}>
+        <Table
+          dataSource={events}
+          rowKey="EventId"
+          bordered
+          columns={columns}
+          expandedRowRender={expandedRowRender}
+          expandedRowKeys={expandedRowKeys}
+          onExpand={handleExpand}
+          expandIconColumnIndex={columns.length}
+          loading={loading}
+          size="small"
+          pagination={{ pageSize: 20 }}
+          scroll={{ x: true }}
+          onChange={(_pagination, _filters, _sorter, extra) => {
+            setFilteredData(extra.currentDataSource); // Always update filtered data
+          }}
+        />
+      </div>
+    </Card>
   );
 };
 
