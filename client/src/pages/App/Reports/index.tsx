@@ -83,15 +83,7 @@ const ReportsPage = () => {
         width: 300,
         dataIndex: "NoteDate",
         key: "date",
-        render: (value: string) =>
-          new Date(value).toLocaleString("en-US", {
-            month: "2-digit",
-            day: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          }),
+        render: (value: string) => dayjs(value).format("DD/MM/YYYY hh:mm A"),
       },
       { title: "User", dataIndex: "UserEmail", key: "user", width: 300 },
       { title: "Note", dataIndex: "NoteText", key: "note" },
