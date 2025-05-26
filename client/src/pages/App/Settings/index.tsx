@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   Table,
@@ -8,7 +8,6 @@ import {
   Input,
   Popconfirm,
   message,
-  Space,
   Tabs,
 } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
