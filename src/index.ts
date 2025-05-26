@@ -12,6 +12,7 @@ import ProjectRouter from "@routes/ProjectRoute";
 import OrganisationRouter from "@routes/OrganisationRoute";
 import EventRouter from "@routes/EventRoute";
 import UserRouter from "@routes/UserRoute";
+import SettingRouter from "@routes/SettingRoute"
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ app.use("/api/v1/rentals", RentalRouter);
 app.use("/api/v1/projects", ProjectRouter);
 app.use("/api/v1/organisations", OrganisationRouter);
 app.use("/api/v1/events", EventRouter);
+app.use("/api/v1/settings", SettingRouter);
 
 const server = http.createServer(app);
 

@@ -104,6 +104,19 @@ const UpdateUserById = (id: string, data: any) => API.put(`/api/v1/users/${id}`,
 const GetUserList = () => API.get("/api/v1/users/list");
 const DeleteUserById = (id: string) => API.delete(`/api/v1/users/${id}`);
 
+//Settings
+const GetPriorityList = () => API.get("/api/v1/settings/priority");
+const AddPriority = (data: { Priority: string }) => API.post("/api/v1/settings/priority", data);
+const DeletePriority = (id: number) => API.delete(`/api/v1/settings/priority/${id}`);
+
+const GetStatusList = () => API.get("/api/v1/settings/status");
+const AddStatus = (data: { Status: string }) => API.post("/api/v1/settings/status", data);
+const DeleteStatus = (id: number) => API.delete(`/api/v1/settings/status/${id}`);
+
+const GetTypeList = () => API.get("/api/v1/settings/type");
+const AddType = (data: { Type: string }) => API.post("/api/v1/settings/type", data);
+const DeleteType = (id: number) => API.delete(`/api/v1/settings/type/${id}`);
+
 export const apis = {
   SignIn,
   SignUp,
@@ -149,4 +162,17 @@ export const apis = {
   UpdateUserById,
   GetUserList,
   DeleteUserById,
+
+  //Settings
+  GetPriorityList,
+  AddPriority,
+  DeletePriority,
+
+  GetStatusList,
+  AddStatus,
+  DeleteStatus,
+
+  GetTypeList,
+  AddType,
+  DeleteType,
 };

@@ -52,9 +52,9 @@ export class EventModel {
         .input("Source", eventData.Source)
         .input("CreateDate", DB.sql.DateTime, eventData.CreateDate)
         .input("Code", eventData.Code).query(`
-          INSERT INTO [Event] ([Title], [Source], [Code], [CreateDate], [User])
+          INSERT INTO [Event] ([Title], [Source], [Code], [CreateDate], [User], [Priority], [Type], [Status])
           OUTPUT INSERTED.EventId
-          VALUES (@Title, @Source, @Code, @CreateDate, @User)
+          VALUES (@Title, @Source, @Code, @CreateDate, @User, 1, 1, 1)
       `);
 
       return result.recordset[0].EventId;

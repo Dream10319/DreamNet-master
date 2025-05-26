@@ -335,6 +335,7 @@ const EventsPage = () => {
       //   onChange={onChange}
       />
     </Card>
+    
   );
 };
 
