@@ -21,6 +21,7 @@ export type EventDetailType = {
   DueDate?: string;
   Type?: number;
   Status?: number;
+  Title: string;
   Priority?: number;
   IsRecurring?: boolean;
   IntervalY?: number;

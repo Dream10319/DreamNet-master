@@ -18,22 +18,12 @@ import OrganisationsPage from "@/pages/App/Organisations";
 import ReportsPage from "@/pages/App/Reports";
 import SettingsPage from "@/pages/App/Settings";
 import UsersPage from "@/pages/App/Users";
-import { ACCESS_TOKEN } from "@/constants";
-import { jwtDecode } from "jwt-decode";
+import { useAuth } from "@/App";
 
-interface JwtPayload {
-  id: number;
-  role: string;
-  name: string;
-  exp: number;
-  iat?: number;
-}
 
 const AppRouter = () => {
-  const token = localStorage.getItem(ACCESS_TOKEN);
-  const decodedToken =  token ? jwtDecode<JwtPayload>(token) : null;
-  console.log(decodedToken);
-  
+  const { decodedToken } = useAuth();
+
   return (
     <Router>
       <Routes>

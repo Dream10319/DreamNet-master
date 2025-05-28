@@ -3,7 +3,7 @@ import { Form, Input, Button, Card, Flex, Typography } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { MessageContext } from "@/App";
+import { MessageContext, useAuth } from "@/App";
 import { SignIn } from "@/store/slices/AuthSlice";
 import { apis } from "@/apis";
 import { RootState } from "@/store";
@@ -14,6 +14,7 @@ const SignInPage = () => {
   const { token } = useSelector((state: RootState) => state.auth);
   const messageAPI = useContext(MessageContext);
   const [loading, setLoading] = useState(false);
+  const { refreshToken } = useAuth();
 
   const handleLogin = async (values: any) => {
     setLoading(true);
@@ -25,6 +26,7 @@ const SignInPage = () => {
           content: response.message,
         });
         dispatch(SignIn(response.payload.token));
+        refreshToken();
       }
     } catch (err: any) {
       messageAPI.open({

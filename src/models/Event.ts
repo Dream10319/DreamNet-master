@@ -67,6 +67,10 @@ export class EventModel {
     try {
       const request = this.#pool.request();
       const setClauses = [];
+      if(eventData.Title){
+        request.input("Title", DB.sql.VarChar, eventData.Title);
+        setClauses.push("[Title] = @Title");
+      }
       if (eventData.Priority) {
         request.input("Priority", DB.sql.Int, eventData.Priority);
         setClauses.push("[Priority] = @Priority");

@@ -77,6 +77,7 @@ const EventSummary: React.FC<EventSummaryProps> = ({
   const SaveEvent = async (values: any) => {
     try {
       setSaving(true);
+      console.log("values", values);
       const resDetail: any = await apis.GetEventDetailById(id);
       const isUpdate = resDetail.payload.event.Description !== null;
 
@@ -195,6 +196,7 @@ const EventSummary: React.FC<EventSummaryProps> = ({
   React.useEffect(() => {
     if (id && eventDetail && initialData.contacts.length > 0) {
       GetEventContactList(id);
+      console.log(eventDetail);
     }
   }, [eventDetail, id, initialData]);
 
@@ -244,6 +246,16 @@ const EventSummary: React.FC<EventSummaryProps> = ({
         form={form}
       >
         <Row>
+          <Col span={24} style={{ padding: "0px 5px" }}>
+            <Form.Item
+              label="Title"
+              name="Title"
+              initialValue={eventDetail.Title}
+              rules={[{ required: true, message: "Please input title!" }]}
+            >
+              <Input style={{ color: dirtyFields["Title"] ? "red" : "black" }} />
+            </Form.Item>
+          </Col>
           <Col
             xs={24}
             sm={12}
