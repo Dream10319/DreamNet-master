@@ -9,6 +9,8 @@ import TextTruncate from "react-text-truncate";
 import { InitialDataType } from "@/types";
 interface EventNoteProps {
   initialData: InitialDataType;
+  notes: any[];
+  setNotes: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 const Truncate = ({ text }: { text: string }) => {
@@ -73,7 +75,7 @@ const EventNote: React.FC<EventNoteProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   React.useEffect(() => {
     if (id) {

@@ -18,6 +18,17 @@ const EventDetailPage = () => {
     contacts: [],
     attachmentType: [],
   });
+  const [notes, setNotes] = React.useState<any[]>([]);
+
+  const GetEventNoteList = async () => {
+    try {
+      const response: any = await apis.GetEventNoteListById(id as string);
+      if (response.status) {
+        setNotes(response.payload.notes);
+      }
+    } catch (err) {
+    }
+  };
 
   const GetEventDetailById = async (id: string) => {
     try {
@@ -56,6 +67,7 @@ const EventDetailPage = () => {
   React.useEffect(() => {
     GetEventDetailById(id as string);
     GetEventInitial();
+    GetEventNoteList();
   }, [id]);
 
   return loading ? (
@@ -82,7 +94,7 @@ const EventDetailPage = () => {
           },
           {
             key: "notes",
-            label: "Notes",
+            label: `Notes(${notes.length})`,
           },
           {
             key: "history",
@@ -103,7 +115,9 @@ const EventDetailPage = () => {
         />
       ) : tab === "notes" ? (
         <Event.Note
-        initialData={initialData} />
+          initialData={initialData}
+          notes={notes}
+          setNotes={setNotes} />
       ) : tab === "history" ? (
         <Event.History />
       ) : (

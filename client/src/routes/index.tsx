@@ -32,6 +32,7 @@ interface JwtPayload {
 const AppRouter = () => {
   const token = localStorage.getItem(ACCESS_TOKEN);
   const decodedToken =  token ? jwtDecode<JwtPayload>(token) : null;
+  console.log(decodedToken);
   
   return (
     <Router>

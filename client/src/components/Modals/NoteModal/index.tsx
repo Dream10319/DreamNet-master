@@ -131,9 +131,12 @@ const NoteModal: React.FC<NoteModalProps> = ({
             style={{ resize: "none", height: 600 }}
           />
         </Form.Item>
-        <Flex justify="flex-end">
+        <Flex justify="flex-end" gap={10}>
           <Button type="primary" htmlType="submit" loading={loading}>
             Save
+          </Button>
+          <Button onClick={handleClose}>
+            Cancel
           </Button>
         </Flex>
       </Form>
