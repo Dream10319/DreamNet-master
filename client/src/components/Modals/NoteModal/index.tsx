@@ -111,7 +111,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
       open={open}
       onCancel={handleClose}
       footer={null}
-      width={400}
+      width={1600}
       maskClosable={false}
     >
       <Form
@@ -128,7 +128,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
         >
           <Input.TextArea
             placeholder="Note"
-            style={{ resize: "none", height: 150 }}
+            style={{ resize: "none", height: 600 }}
           />
         </Form.Item>
         <Flex justify="flex-end">
