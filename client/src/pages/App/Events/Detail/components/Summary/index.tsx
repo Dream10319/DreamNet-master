@@ -418,16 +418,21 @@ const EventSummary: React.FC<EventSummaryProps> = ({
                   name="IntervalY"
                   style={{ width: "30%" }}
                   initialValue={eventDetail.IntervalY}
-                  dependencies={["IsRecurring"]}
+                  dependencies={["IsRecurring", "IntervalY", "IntervalM", "IntervalD"]}
                   rules={[
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (getFieldValue("IsRecurring") === 1 && !value) {
+                    {
+                      validator: (_, __,) => {
+                        const isRecurring = form.getFieldValue("IsRecurring") === 1;
+                        const y = form.getFieldValue("IntervalY") || 0;
+                        const m = form.getFieldValue("IntervalM") || 0;
+                        const d = form.getFieldValue("IntervalD") || 0;
+
+                        if (isRecurring && y + m + d === 0) {
                           return Promise.reject();
                         }
                         return Promise.resolve();
                       },
-                    }),
+                    },
                   ]}
                 >
                   <InputNumber
@@ -442,16 +447,21 @@ const EventSummary: React.FC<EventSummaryProps> = ({
                   name="IntervalM"
                   style={{ width: "30%" }}
                   initialValue={eventDetail.IntervalM}
-                  dependencies={["IsRecurring"]}
+                  dependencies={["IsRecurring", "IntervalY", "IntervalM", "IntervalD"]}
                   rules={[
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (getFieldValue("IsRecurring") === 1 && !value) {
+                    {
+                      validator: (_, __,) => {
+                        const isRecurring = form.getFieldValue("IsRecurring") === 1;
+                        const y = form.getFieldValue("IntervalY") || 0;
+                        const m = form.getFieldValue("IntervalM") || 0;
+                        const d = form.getFieldValue("IntervalD") || 0;
+
+                        if (isRecurring && y + m + d === 0) {
                           return Promise.reject();
                         }
                         return Promise.resolve();
                       },
-                    }),
+                    },
                   ]}
                 >
                   <InputNumber
@@ -466,16 +476,21 @@ const EventSummary: React.FC<EventSummaryProps> = ({
                   name="IntervalD"
                   style={{ width: "30%" }}
                   initialValue={eventDetail.IntervalD}
-                  dependencies={["IsRecurring"]}
+                  dependencies={["IsRecurring", "IntervalY", "IntervalM", "IntervalD"]}
                   rules={[
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (getFieldValue("IsRecurring") === 1 && !value) {
+                    {
+                      validator: (_, __,) => {
+                        const isRecurring = form.getFieldValue("IsRecurring") === 1;
+                        const y = form.getFieldValue("IntervalY") || 0;
+                        const m = form.getFieldValue("IntervalM") || 0;
+                        const d = form.getFieldValue("IntervalD") || 0;
+
+                        if (isRecurring && y + m + d === 0) {
                           return Promise.reject();
                         }
                         return Promise.resolve();
                       },
-                    }),
+                    },
                   ]}
                 >
                   <InputNumber

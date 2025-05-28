@@ -18,12 +18,21 @@ import OrganisationsPage from "@/pages/App/Organisations";
 import ReportsPage from "@/pages/App/Reports";
 import SettingsPage from "@/pages/App/Settings";
 import UsersPage from "@/pages/App/Users";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+import { ACCESS_TOKEN } from "@/constants";
+import { jwtDecode } from "jwt-decode";
+
+interface JwtPayload {
+  id: number;
+  role: string;
+  name: string;
+  exp: number;
+  iat?: number;
+}
 
 const AppRouter = () => {
-  const { authUser } = useSelector((state: RootState) => state.auth);
-
+  const token = localStorage.getItem(ACCESS_TOKEN);
+  const decodedToken =  token ? jwtDecode<JwtPayload>(token) : null;
+  
   return (
     <Router>
       <Routes>
@@ -76,7 +85,7 @@ const AppRouter = () => {
             </AppLayout>
           }
         />
-        {authUser && authUser.role === "ADMIN" ? (
+        {decodedToken && decodedToken.role === "ADMIN" ? (
           <>
             <Route
               path="/settings"

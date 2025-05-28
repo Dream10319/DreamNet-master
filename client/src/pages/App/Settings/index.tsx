@@ -125,7 +125,7 @@ const SettingsManager = () => {
       }
       message.success("Deleted successfully");
     } catch {
-      message.error("That field is used already, so can't delete");
+      message.error("Value in use, cannot be deleted");
     }
   };
 
