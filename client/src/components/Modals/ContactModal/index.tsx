@@ -21,6 +21,7 @@ const ContactModal: React.FC<ContactModalProps> = ({
   const [form] = Form.useForm();
   const messageAPI = React.useContext(MessageContext);
   const [loading, setLoading] = React.useState(false);
+  const [userList, setUserList] = React.useState<Array<any>>([]);
 
   const handleClose = () => {
     setOpen(false);
@@ -47,10 +48,45 @@ const ContactModal: React.FC<ContactModalProps> = ({
   };
 
   React.useEffect(() => {
+    const fetchUserList = async () => {
+      try {
+        const response: any = await apis.GetUserList();
+        setUserList(response.payload.users);
+      } catch (error) {
+        messageAPI.open({
+          type: "error",
+          content: "Failed to load user list.",
+        });
+      }
+    };
+
     if (open) {
       form.resetFields();
+      fetchUserList();
     }
   }, [open]);
+
+  const mergedContacts = React.useMemo(() => {
+    const contactMap = new Map<string, any>();
+
+    contacts.forEach((contact) => {
+      contactMap.set(contact.ContactId, {
+        value: contact.ContactId,
+        label: `${contact.ContactName}${contact.Email ? ` (${contact.Email})` : ""}`,
+      });
+    });
+
+    userList.forEach((user) => {
+      if (!contactMap.has(user.UserId)) {
+        contactMap.set(user.UserId, {
+          value: user.UserId,
+          label: `${user.UserName}${user.UserEmail ? ` (${user.UserEmail})` : ""}`,
+        });
+      }
+    });
+
+    return Array.from(contactMap.values());
+  }, [contacts, userList]);
 
   return (
     <Modal
@@ -81,15 +117,7 @@ const ContactModal: React.FC<ContactModalProps> = ({
             filterOption={(input, option: any) =>
               (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
             }
-            options={contacts.map((contact: any) => {
-              return {
-                value: contact.ContactId,
-                label:
-                  `${contact.ContactName}` +
-                  " " +
-                  (contact.Email ? `(${contact.Email})` : ""),
-              };
-            })}
+            options={mergedContacts}
           />
         </Form.Item>
         <Flex justify="flex-end">

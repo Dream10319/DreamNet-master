@@ -196,7 +196,6 @@ const EventSummary: React.FC<EventSummaryProps> = ({
   React.useEffect(() => {
     if (id && eventDetail && initialData.contacts.length > 0) {
       GetEventContactList(id);
-      console.log(eventDetail);
     }
   }, [eventDetail, id, initialData]);
 
