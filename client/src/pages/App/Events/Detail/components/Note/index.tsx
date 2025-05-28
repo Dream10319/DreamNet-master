@@ -36,6 +36,8 @@ const Truncate = ({ text }: { text: string }) => {
 
 const EventNote: React.FC<EventNoteProps> = ({
   initialData,
+  notes,
+  setNotes
 }) => {
   const { id } = useParams();
   const [open, setOpen] = React.useState(false);
@@ -43,7 +45,6 @@ const EventNote: React.FC<EventNoteProps> = ({
   const [deleteLoading, setDeleteLoading] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [currentNote, setCurrentNote] = React.useState<any>(null);
-  const [notes, setNotes] = React.useState<Array<any>>([]);
 
   const DeleteNote = async () => {
     try {

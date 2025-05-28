@@ -92,20 +92,20 @@ const AttachmentModal: React.FC<AttachmentModalProps> = ({
         ...values,
         Type: values.File.fileList[0].type.includes("image/")
           ? attachmentType.filter(
-              (type: any) => type.AttachmentTypeName === "Image"
-            )[0].EventAttachmentTypeId
+            (type: any) => type.AttachmentTypeName === "Image"
+          )[0].EventAttachmentTypeId
           : getFileExtension(fileName) === "pdf"
             ? attachmentType.filter(
-                (type: any) => type.AttachmentTypeName === "Pdf"
-              )[0].EventAttachmentTypeId
+              (type: any) => type.AttachmentTypeName === "Pdf"
+            )[0].EventAttachmentTypeId
             : getFileExtension(fileName) === "xlsx" ||
-                getFileExtension(fileName) === "xls"
+              getFileExtension(fileName) === "xls"
               ? attachmentType.filter(
-                  (type: any) => type.AttachmentTypeName === "Excel"
-                )[0].EventAttachmentTypeId
+                (type: any) => type.AttachmentTypeName === "Excel"
+              )[0].EventAttachmentTypeId
               : attachmentType.filter(
-                  (type: any) => type.AttachmentTypeName === "Word"
-                )[0].EventAttachmentTypeId,
+                (type: any) => type.AttachmentTypeName === "Word"
+              )[0].EventAttachmentTypeId,
         FileName: fileName,
         FilePath: uploadedPath,
       });

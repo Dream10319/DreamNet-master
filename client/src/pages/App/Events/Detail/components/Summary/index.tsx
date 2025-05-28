@@ -77,7 +77,6 @@ const EventSummary: React.FC<EventSummaryProps> = ({
   const SaveEvent = async (values: any) => {
     try {
       setSaving(true);
-      console.log("values", values);
       const resDetail: any = await apis.GetEventDetailById(id);
       const isUpdate = resDetail.payload.event.Description !== null;
 
@@ -133,12 +132,6 @@ const EventSummary: React.FC<EventSummaryProps> = ({
       setLoadingContact(true);
       const response: any = await apis.GetEventContactListById(id);
       if (response.status) {
-        form.setFieldsValue({
-          Status:
-            eventDetail.Status || response.payload.contacts.length > 0
-              ? 1
-              : null,
-        });
         const tempContacts = response.payload.contacts.map(
           (contact: any, index: number) => {
             const tempContact = initialData.contacts.filter(
@@ -326,7 +319,12 @@ const EventSummary: React.FC<EventSummaryProps> = ({
             xl={5}
             style={{ padding: "0px 5px" }}
           >
-            <Form.Item label="Status" name="Status">
+            <Form.Item
+              label="Status"
+              name="Status"
+              initialValue={eventDetail.Status}
+              rules={[{ required: true, message: "Please select type!" }]}
+            >
               <Select
                 options={initialData.eventStatus.map((status: any) => {
                   return {

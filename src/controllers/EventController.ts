@@ -147,11 +147,21 @@ export class EventController {
       const { id } = req.params;
       const eventData = req.body;
 
+      const originalEvent = await this.#eventModel.GetEventDetailById(id);
       await this.#eventModel.UpdateEventById(id, eventData);
+      const originalEventStatus = (await this.#eventModel.GetEventStatusById(originalEvent.Status.toString())).Status;
+      const newEventStatus = (await this.#eventModel.GetEventStatusById(eventData.Status.toString())).Status;
+      const originalEventType = (await this.#eventModel.GetEventTypeById(originalEvent.Type.toString())).Type;
+      const newEventType = (await this.#eventModel.GetEventTypeById(eventData.Type.toString())).Type;
+      const originalEventPriority = (await this.#eventModel.GetEventPriorityById(originalEvent.Priority.toString())).Priority;
+      const newEventPriority = (await this.#eventModel.GetEventPriorityById(eventData.Priority.toString())).Priority;
+      const eventString = (originalEvent.Priority != eventData.Priority ? `[Priority: ${originalEventPriority} -> ${newEventPriority}] ` : "") +
+        (originalEvent.Status != eventData.Status ? `[Status: ${originalEventStatus} -> ${newEventStatus}] ` : "") +
+        (originalEvent.Type != eventData.Type ? `[Type: ${originalEventType} -> ${newEventType}]` : "")
       this.#eventModel.AddEventHistory(
         Number(id),
         Number(eventData.userId),
-        "Event Updated"
+        `Event Updated ${eventString != "" ? "(" + eventString + ")" : ""}`
       );
       return res.status(200).json({
         status: true,

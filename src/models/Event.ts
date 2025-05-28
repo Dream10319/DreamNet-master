@@ -67,7 +67,7 @@ export class EventModel {
     try {
       const request = this.#pool.request();
       const setClauses = [];
-      if(eventData.Title){
+      if (eventData.Title) {
         request.input("Title", DB.sql.VarChar, eventData.Title);
         setClauses.push("[Title] = @Title");
       }
@@ -154,6 +154,40 @@ export class EventModel {
       const result = await request.query(`SELECT * FROM [EventPriority]`);
 
       return result.recordset;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  GetEventStatusById = async (id: string) => {
+    try {
+      const request = this.#pool.request();
+      const result = await request.input("id", DB.sql.Int, Number(id))
+        .query(`SELECT * FROM [EventStatus]
+        WHERE EStatusId = @id`);
+      return result.recordset.length > 0 ? result.recordset[0] : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+  GetEventTypeById = async (id: string) => {
+    try {
+      const request = this.#pool.request();
+      const result = await request.input("id", DB.sql.Int, Number(id))
+        .query(`SELECT * FROM [EventType]
+        WHERE ETypeId = @id`);
+      return result.recordset.length > 0 ? result.recordset[0] : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+  GetEventPriorityById = async (id: string) => {
+    try {
+      const request = this.#pool.request();
+      const result = await request.input("id", DB.sql.Int, Number(id))
+        .query(`SELECT * FROM [EventPriority]
+        WHERE EPriorityId = @id`);
+      return result.recordset.length > 0 ? result.recordset[0] : null;
     } catch (err) {
       throw err;
     }
